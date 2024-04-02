@@ -1,9 +1,9 @@
 ---
-title: opentp
+title: opentp文档
+icon: object-group
 index: false
-icon: laptop-code
-category:
-  - 使用指南
+dir:
+  order: 1
 ---
 
 <Catalog />

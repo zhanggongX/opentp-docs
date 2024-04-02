@@ -1,9 +1,9 @@
 ---
-title: 作者博客
+title: JAVA知识
 icon: object-group
 index: false
 dir:
-  order: 2
+  order: 1
 ---
 
 <Catalog />

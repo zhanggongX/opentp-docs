@@ -1,5 +1,5 @@
 ---
-title: 作者博客
+title: 算法
 icon: object-group
 index: false
 dir:
