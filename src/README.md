@@ -48,7 +48,7 @@ actions:
 
 
 copyright: false
-footer: <a href="" target="_blank">个人文章分享</a> | MIT 协议,   版权所有 © 2019 - present zhanggong
+footer: <a href="http://opentp.cn/" > opentp </a> | MIT 协议,  版权所有 © 2020 - 2024 zhanggong | <a href="https://beian.miit.gov.cn/" target="_blank"> 豫ICP备2024059261号-1 </a> 
 ---
 
 IT行业技术文章
