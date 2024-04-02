@@ -7,18 +7,16 @@ export default defineUserConfig({
   locales: {
     "/en/": {
       lang: "en-US",
-      title: "Docs Demo",
-      description: "A docs demo for vuepress-theme-hope",
+      title: "opntp docs",
+      description: "the docs for opntp",
     },
+
     "/": {
       lang: "zh-CN",
-      title: "文档演示",
-      description: "vuepress-theme-hope 的文档演示",
+      title: "opentp",
+      description: "opentp 项目文档",
     },
   },
 
   theme,
-
-  // Enable it with pwa
-  // shouldPrefetch: false,
 });

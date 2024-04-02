@@ -3,52 +3,34 @@ import { enNavbar, zhNavbar } from "./navbar/index.js";
 import { enSidebar, zhSidebar } from "./sidebar/index.js";
 
 export default hopeTheme({
-  hostname: "https://vuepress-theme-hope-docs-demo.netlify.app",
+  hostname: "opentp.cn",
 
   author: {
-    name: "Mr.Hope",
-    url: "https://mister-hope.com",
+    name: "zhanggong",
+    url: "opentp.cn",
   },
-
   iconAssets: "fontawesome-with-brands",
-
-  logo: "https://theme-hope-assets.vuejs.press/logo.svg",
-
-  repo: "vuepress-theme-hope/vuepress-theme-hope",
-
-  docsDir: "src",
+  logo: "logo.svg",
+  repo: "https://github.com/zhanggongX/open-tp.git",
+  docsDir: "开源项目 opentp 介绍文档",
 
   locales: {
+    // en config
     "/en/": {
-      // navbar
       navbar: enNavbar,
-
-      // sidebar
       sidebar: enSidebar,
-
       footer: "Default footer",
-
       displayFooter: true,
-
       metaLocales: {
         editLink: "Edit this page on GitHub",
       },
     },
-
-    /**
-     * Chinese locale config
-     */
+    // zh config
     "/": {
-      // navbar
       navbar: zhNavbar,
-
-      // sidebar
       sidebar: zhSidebar,
-
       footer: "默认页脚",
-
       displayFooter: true,
-
       // page meta
       metaLocales: {
         editLink: "在 GitHub 上编辑此页",
@@ -56,21 +38,14 @@ export default hopeTheme({
     },
   },
 
-  encrypt: {
-    config: {
-      "/en/demo/encrypt.html": ["1234"],
-      "/demo/encrypt.html": ["1234"],
-    },
-  },
-
   plugins: {
     // You should generate and use your own comment service
     comment: {
       provider: "Giscus",
-      repo: "vuepress-theme-hope/giscus-discussions",
-      repoId: "R_kgDOG_Pt2A",
+      repo: "zhanggongX/opentp-docs",
+      repoId: "R_kgDOLkwkHg",
       category: "Announcements",
-      categoryId: "DIC_kwDOG_Pt2M4COD69",
+      categoryId: "DIC_kwDOLkwkHs4CeZiW",
     },
 
     components: {
