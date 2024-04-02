@@ -1,25 +1,31 @@
 import { sidebar } from "vuepress-theme-hope";
 
 export const zhSidebar = sidebar({
-  "/": [
-    "",
+  "/opentp": [
     {
-      text: "文章",
-      icon: "laptop-code",
-      prefix: "demo/",
-      link: "demo/",
-      children: "structure",
+      text: "opentp项目",
+      icon: "star",
+      prefix: "opentp/",
+      collapsible: true,
+      children: [
+        "intro/",
+      ],
     },
-    // {
-    //   text: "文档",
-    //   icon: "book",
-    //   prefix: "guide/",
-    //   children: "structure",
-    // },
-    // {
-    //   text: "幻灯片",
-    //   icon: "person-chalkboard",
-    //   link: "https://plugin-md-enhance.vuejs.press/zh/guide/content/revealjs/demo.html",
-    // },
   ],
+  "/blog": [
+    {
+      text: "作者博客",
+      icon: "gears",
+      // prefix: "blog/",
+      children: [
+        "algorithm/",
+        "java/",
+      ],
+    },
+  ]
+
+  // "/guide/": "structure",
+  // "/opentp/": "structure",
+  // "/blog/": "structure",
+  // "/demo/": "structure",
 });

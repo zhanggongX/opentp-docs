@@ -9,8 +9,10 @@ export default hopeTheme({
     name: "zhanggong",
     url: "opentp.cn",
   },
+
   iconAssets: "fontawesome-with-brands",
   logo: "logo.svg",
+  favicon: "favicon.ico",
   repo: "https://github.com/zhanggongX/open-tp.git",
   docsDir: "开源项目 opentp 介绍文档",
 
@@ -19,22 +21,32 @@ export default hopeTheme({
     "/en/": {
       navbar: enNavbar,
       sidebar: enSidebar,
-      footer: "Default footer",
+      footer: '<a href="https://beian.miit.gov.cn/" target="_blank">豫ICP备2024059261号-1</a>',
       displayFooter: true,
       metaLocales: {
-        editLink: "Edit this page on GitHub",
+        editLink: "Edit this page",
       },
     },
     // zh config
     "/": {
       navbar: zhNavbar,
       sidebar: zhSidebar,
-      footer: "默认页脚",
+      footer: '<a href="https://beian.miit.gov.cn/" target="_blank">豫ICP备2024059261号-1</a>',
       displayFooter: true,
       // page meta
       metaLocales: {
-        editLink: "在 GitHub 上编辑此页",
+        editLink: "编辑此页",
       },
+    },
+  },
+
+  pageInfo: ["Author", "Category", "Tag", "Original", "Word", "ReadingTime"],
+
+  blog: {
+    intro: "/about-the-author/",
+    sidebarDisplay: "mobile",
+    medias: {
+      Github: "https://github.com/zhanggongX",
     },
   },
 
