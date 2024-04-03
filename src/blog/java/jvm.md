@@ -1,6 +1,5 @@
 ---
-title: jvm介绍
-icon: fas
+title: jvm
 category:
   - JAVA知识
 order: 1

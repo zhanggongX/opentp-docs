@@ -1,6 +1,6 @@
 ---
 title: JAVA知识
-icon: object-group
+icon: /assets/image/java.svg
 index: false
 dir:
   order: 1
