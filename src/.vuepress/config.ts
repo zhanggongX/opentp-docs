@@ -7,7 +7,7 @@ export default defineUserConfig({
   locales: {
     "/en/": {
       lang: "en-US",
-      title: "opntp docs",
+      title: "opentp",
       description: "the docs for opntp",
     },
 
