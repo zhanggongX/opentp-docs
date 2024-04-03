@@ -8,7 +8,7 @@ export default defineUserConfig({
     "/en/": {
       lang: "en-US",
       title: "opentp",
-      description: "the docs for opntp",
+      description: "the docs for opentp",
     },
 
     "/": {
