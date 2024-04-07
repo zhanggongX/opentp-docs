@@ -1,5 +1,5 @@
 ---
-title: JAVA知识
+title: Java
 icon: /assets/image/java.svg
 index: false
 dir:
