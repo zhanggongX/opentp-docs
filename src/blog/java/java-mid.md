@@ -226,7 +226,7 @@ public native long reallocateMemory(long address, long bytes);
 public native void setMemory(Object o, long offset, long bytes, byte value);
 //内存拷贝
 public native void copyMemory(Object srcBase, long srcOffset,Object destBase, long destOffset,long bytes);
-//清除内存
+//释放内存
 public native void freeMemory(long address);
 ```
 
@@ -245,20 +245,20 @@ public native void fullFence();
 ```java
 public class Demo {
 
-    private int value;
+    private int test;
 
     public static void main(String[] args) throws Exception{
-        Unsafe unsafe = reflectGetUnsafe();
+        Unsafe unsafe = getUnsafe();
         assert unsafe != null;
-        long offset = unsafe.objectFieldOffset(Main.class.getDeclaredField("value"));
-        Demo main = new Demo();
-        System.out.println("value before putInt: " + main.value);
-        unsafe.putInt(main, offset, 42);
-        System.out.println("value after putInt: " + main.value);
-        System.out.println("value after putInt: " + unsafe.getInt(main, offset));
+        long offset = unsafe.objectFieldOffset(Demo.class.getDeclaredField("test"));
+        Demo demo = new Demo();
+        System.out.println(demo.test);
+        unsafe.putInt(demo, offset, 42);
+        System.out.println(demo.test);
+        System.out.println(unsafe.getInt(demo, offset));
     }
 
-    private static Unsafe reflectGetUnsafe() {
+    private static Unsafe getUnsafe() {
         try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
@@ -283,28 +283,17 @@ public native int arrayIndexScale(Class<?> arrayClass);
 
 #### CAS
 ```java
-/**
-  *  CAS
-  * @param o         包含要修改field的对象
-  * @param offset    对象中某field的偏移量
-  * @param expected  期望值
-  * @param update    更新值
-  * @return          true | false
-  */
 public final native boolean compareAndSwapObject(Object o, long offset,  Object expected, Object update);
-
 public final native boolean compareAndSwapInt(Object o, long offset, int expected,int update);
-
 public final native boolean compareAndSwapLong(Object o, long offset, long expected, long update);
-
-// cas操作，使用 cpu的 cmpxchg 指令实现
+// cas操作，使用 cpu的原子指令 cmpxchg 指令实现
 ```
 
 #### 线程调度
 ```java
 //取消阻塞线程
 public native void unpark(Object thread);
-//阻塞线程
+//time 时间内，阻塞线程
 public native void park(boolean isAbsolute, long time);
 //获得对象锁（可重入锁）
 @Deprecated
@@ -317,25 +306,26 @@ public native void monitorExit(Object o);
 public native boolean tryMonitorEnter(Object o);
 
 // Jdk中的锁 AQS 很多用到线程操作 和 CAS
+// AQS 通过 LockSupport.park() 和 LockSupport.unpark() 实现线程的阻塞和唤醒的，底层就是调用 Unsafe 的 park、unpark。
 
-public static void main(String[] args) {
-    // 当前线程（主线程）
-    Thread mainThread = Thread.currentThread();
-    new Thread(()->{
-        try {
-            TimeUnit.SECONDS.sleep(5);
-            System.out.println("subThread try to unpark mainThread");
-            // 挂起主线程
-            unsafe.unpark(mainThread);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }).start();
+public class Demo{
+    public static void main(String[] args) {
+    
+        Thread curThread = Thread.currentThread();
+        new Thread(()->{
+            try {
+                TimeUnit.SECONDS.sleep(10);
+                System.out.println("10秒后唤起主线程");
+                unsafe.unpark(curThread);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
 
-    System.out.println("park main mainThread");
-    // 唤起线程
-    unsafe.park(false,0L);
-    System.out.println("unpark mainThread success");
+        System.out.println("挂起当前线程");
+        unsafe.park(false, 0L);
+        System.out.println("主线程被唤醒");
+    }
 }
 ```
 
