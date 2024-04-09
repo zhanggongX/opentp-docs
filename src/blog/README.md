@@ -3,11 +3,7 @@ title: 作者博客
 icon: blog
 index: false
 dir:
-  order: 2
+  order: 1
 ---
 
-<!-- <Catalog /> -->
-
-## 作者介绍
-
-博客内容逐步迁移中
+<Catalog />
