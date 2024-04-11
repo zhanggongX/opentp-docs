@@ -1,13 +1,15 @@
 ---
 title: 快速上手
-icon: lightbulb
+icon: /assets/image/star.svg
 index: false
 dir:
   order: 1
 ---
 
+<Catalog />
+
 <!-- <Catalog /> -->
 
 ## 介绍
 
-![项目架构图](architecture.png)
+1 opentp 介绍
