@@ -15,6 +15,7 @@ export default hopeTheme({
   favicon: "favicon.ico",
   repo: "https://github.com/zhanggongX/open-tp.git",
   docsDir: "开源项目 opentp 介绍文档",
+  lastUpdated: false,
 
   locales: {
     // en config
