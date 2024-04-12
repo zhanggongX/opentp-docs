@@ -12,7 +12,7 @@ tagline: 基于Rest风格的，线程池监控工具。
 actions:
   - text: 快速开始
     icon: lightbulb
-    link: ./start/
+    link: ./quickstart/
     type: primary
 
   - text: 文档中心
