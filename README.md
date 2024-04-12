@@ -8,4 +8,4 @@
 - [作者博客地址](https://opentp.cn/blog/)
 
 ### 感谢
-[文档开源框架](https://theme-hope.vuejs.press/zh/)
+- [VuePress Theme Hope](https://theme-hope.vuejs.press/zh/)
