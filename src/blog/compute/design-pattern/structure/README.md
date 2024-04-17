@@ -1,9 +1,9 @@
 ---
-title: 结构型
+title: 二.结构型
 # icon: /assets/image/design-pattern.svg
 index: false
 dir:
-  order: 1
+  order: 3
 ---
 
 <Catalog />
