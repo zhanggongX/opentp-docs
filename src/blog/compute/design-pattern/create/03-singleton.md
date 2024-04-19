@@ -2,7 +2,7 @@
 title: 单例模式
 category:
   - 设计模式
-order: 3
+order: 4
 tag:
   - 单例模式
   - 创建型设计模式

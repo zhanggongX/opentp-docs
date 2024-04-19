@@ -2,7 +2,7 @@
 title: 抽象工厂模式
 category:
   - 设计模式
-order: 2
+order: 3
 tag:
   - 设计模式
   - 工厂模式

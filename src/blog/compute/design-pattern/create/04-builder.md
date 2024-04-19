@@ -2,7 +2,7 @@
 title: 建造者模式
 category:
   - 设计模式
-order: 4
+order: 5
 tag:
   - 构建模式
   - 创建型设计模式

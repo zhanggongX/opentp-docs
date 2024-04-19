@@ -2,7 +2,7 @@
 title: 原型模式
 category:
   - 设计模式
-order: 5
+order: 6
 tag:
   - 原型模式
   - 创建型设计模式
