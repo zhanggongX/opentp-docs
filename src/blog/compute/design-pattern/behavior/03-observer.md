@@ -71,4 +71,4 @@ public class ObserverA implements Observer {
 
 ### 真正的观察者模式
 不应该互相有什么依赖、组合，而是基于事件驱动。  
-notify 发出一个 **通知**, 所有观察者都关着这个事件。
+notify 发出一个 **通知**, 所有观察者都关注这个事件。
