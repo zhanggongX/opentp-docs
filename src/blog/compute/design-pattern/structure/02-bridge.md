@@ -20,8 +20,14 @@ tag:
 > 这时候就可以用桥接模式了，桥接模式其实就是把复杂的继承，换成组合的方式来处理，例如手机功能不是继承手机系统，而是手机系统包含手机功能，手机系统类内部有一系列手机功能的对象。
 > 这样每次新增手机功能或者手机功能变化，对手机系统完全无影响。
 
-### 代码
+### 代码一
 ```java
+
+```
+
+### 代码二
+```java
+// Implementor
 interface DrawingAPI
 {
     public void drawCircle(double x, double y, double radius);
