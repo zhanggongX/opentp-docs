@@ -22,7 +22,60 @@ tag:
 
 ### 代码一
 ```java
+public interface Implementor {
 
+    void operation();
+}
+
+public class ImplementorA implements Implementor{
+
+    @Override
+    public void operation() {
+        System.out.println("a");
+    }
+}
+
+public class ImplementorB implements Implementor {
+    @Override
+    public void operation() {
+        System.out.println("b");
+    }
+}
+
+public abstract class Abstraction {
+
+    protected Implementor implementor;
+
+    public Implementor getImplementor() {
+        return implementor;
+    }
+
+    public void setImplementor(Implementor implementor) {
+        this.implementor = implementor;
+    }
+
+    public abstract void operation();
+}
+
+public class RefinedAbstraction extends Abstraction {
+    @Override
+    public void operation() {
+        implementor.operation();
+    }
+}
+
+public class Demo {
+
+    public static void main(String[] args) {
+        Abstraction abstraction = new RefinedAbstraction();
+
+        abstraction.setImplementor(new ImplementorA());
+        abstraction.operation();
+
+        abstraction.setImplementor(new ImplementorB());
+        abstraction.operation();
+    }
+}
 ```
 
 ### 代码二
