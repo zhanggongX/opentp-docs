@@ -2,7 +2,7 @@
 title: 组合模式
 category:
   - 设计模式
-order: 5
+order: 6
 tag:
   - 组合模式
   - 结构型设计模式
