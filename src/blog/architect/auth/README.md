@@ -1,5 +1,5 @@
 ---
-title: 授权认证
+title: 认证授权
 # icon: /assets/image/architect.svg
 index: false
 dir:
