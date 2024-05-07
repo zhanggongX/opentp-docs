@@ -1,5 +1,5 @@
 ---
-title: 二.结构型
+title: 结构型
 # icon: /assets/image/design-pattern.svg
 index: false
 dir:

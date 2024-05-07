@@ -1,5 +1,5 @@
 ---
-title: 三.行为型
+title: 行为型
 # icon: /assets/image/design-pattern.svg
 index: false
 dir:

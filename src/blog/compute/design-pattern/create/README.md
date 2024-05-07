@@ -1,5 +1,5 @@
 ---
-title: 一.创建型
+title: 创建型
 # icon: /assets/image/design-pattern.svg
 index: false
 dir:
