@@ -131,4 +131,5 @@ int binarySearch_right(int[] nums, int target) {
 至此就解决了所有的二分查找问题。
 
 ### 参考：
-[labualdong算法笔记](https://labuladong.online/algo/essential-technique/binary-search-framework/#%E4%B8%89%E3%80%81%E5%AF%BB%E6%89%BE%E5%8F%B3%E4%BE%A7%E8%BE%B9%E7%95%8C%E7%9A%84%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE)
+[labualdong算法笔记](https://labuladong.online/algo/essential-technique/binary-search-framework/#%E4%B8%89%E3%80%81%E5%AF%BB%E6%89%BE%E5%8F%B3%E4%BE%A7%E8%BE%B9%E7%95%8C%E7%9A%84%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE)  
+[灵神的二分算法题单](https://leetcode.cn/circle/discuss/SqopEo/)
