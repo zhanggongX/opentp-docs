@@ -2,7 +2,7 @@
 title: 超时重试
 category:
   - 高可用
-order: 3
+order: 4
 tag:
   - 服务高可用
   - retry

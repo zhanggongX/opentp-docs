@@ -2,7 +2,7 @@
 title: 数据库高性能
 category:
   - 高可用
-order: 2
+order: 5
 tag:
   - 服务高可用
   - 读写分离

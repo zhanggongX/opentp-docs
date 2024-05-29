@@ -2,7 +2,7 @@
 title: 服务限流
 category:
   - 高可用
-order: 1
+order: 3
 tag:
   - 服务高可用
   - 服务限流
