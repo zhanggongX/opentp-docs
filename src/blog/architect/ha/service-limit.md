@@ -348,29 +348,47 @@ public class DynamicRateLimiter {
 ## 分布式限流
 由于分布式系统中存在多个服务节点，分布式限流需要在全局范围内协调各节点的限流策略，以保证整体系统的稳定性和高可用性。
 
-### 基于 Redis 的分布式限流实现示例
+### 基于 Redis 的令牌桶分布式限流实现示例
 #### Redis 脚本
 使用 Lua 脚本保证原子性操作。  
 使用 Lua 脚本检查当前计数器的值，如果未超过限流阈值，则增加计数器并设置过期时间，否则返回 0 表示限流。  
 
 ```lua
--- rate_limit.lua
+-- token_bucket.lua
 local key = KEYS[1]
-local limit = tonumber(ARGV[1])
-local current = tonumber(redis.call('get', key) or "0")
+local rate = tonumber(ARGV[1])  -- 令牌生成速率 (每秒生成的令牌数量)
+local capacity = tonumber(ARGV[2])  -- 令牌桶容量
+local now = tonumber(ARGV[3])  -- 当前时间（秒）
+local requested = tonumber(ARGV[4])  -- 请求的令牌数量（通常为1）
 
-if current + 1 > limit then
-    return 0
+-- 获取令牌桶的状态
+local last_tokens = tonumber(redis.call('get', key .. ':tokens') or capacity)
+local last_refreshed = tonumber(redis.call('get', key .. ':timestamp') or now)
+
+-- 计算生成的令牌数
+local delta = math.max(0, now - last_refreshed) * rate
+local tokens = math.min(capacity, last_tokens + delta)
+
+-- 判断是否有足够的令牌
+if tokens >= requested then
+    tokens = tokens - requested
+    redis.call('set', key .. ':tokens', tokens)
+    redis.call('set', key .. ':timestamp', now)
+    return 1  -- 请求成功
 else
-    redis.call("INCRBY", key, 1)
-    redis.call("EXPIRE", key, 1)
-    return 1
+    redis.call('set', key .. ':tokens', tokens)
+    redis.call('set', key .. ':timestamp', now)
+    return 0  -- 请求被限流
 end
+
 ```
 #### lua 脚本解释：
-- `KEYS[1]`：限流键。
-- `ARGV[1]`：限流阈值。
-- 检查当前计数器的值，如果超过阈值则返回 0，否则增加计数器并设置过期时间为 1 秒。
+- KEYS[1]：限流键。
+- ARGV[1]：令牌生成速率。
+- ARGV[2]：令牌桶容量。
+- ARGV[3]：当前时间（秒）。
+- ARGV[4]：请求的令牌数量（通常为 1）。
+> 脚本首先获取当前令牌数量和上次刷新时间，计算生成的令牌数并更新令牌数量。如果令牌数量足够，则扣减令牌并允许请求，否则拒绝请求。
 
 #### Java 实现
 使用 Jedis 客户端连接 Redis 并执行限流操作。
@@ -380,37 +398,50 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-public class RedisRateLimiter {
-    private static final String LUA_SCRIPT = "local key = KEYS[1] " +
-                                             "local limit = tonumber(ARGV[1]) " +
-                                             "local current = tonumber(redis.call('get', key) or '0') " +
-                                             "if current + 1 > limit then " +
-                                             "  return 0 " +
-                                             "else " +
-                                             "  redis.call('INCRBY', key, 1) " +
-                                             "  redis.call('EXPIRE', key, 1) " +
-                                             "  return 1 " +
-                                             "end";
+public class RedisTokenBucketRateLimiter {
+    private static final String LUA_SCRIPT =
+            "local key = KEYS[1] " +
+            "local rate = tonumber(ARGV[1]) " +
+            "local capacity = tonumber(ARGV[2]) " +
+            "local now = tonumber(ARGV[3]) " +
+            "local requested = tonumber(ARGV[4]) " +
+            "local last_tokens = tonumber(redis.call('get', key .. ':tokens') or capacity) " +
+            "local last_refreshed = tonumber(redis.call('get', key .. ':timestamp') or now) " +
+            "local delta = math.max(0, now - last_refreshed) * rate " +
+            "local tokens = math.min(capacity, last_tokens + delta) " +
+            "if tokens >= requested then " +
+            "    tokens = tokens - requested " +
+            "    redis.call('set', key .. ':tokens', tokens) " +
+            "    redis.call('set', key .. ':timestamp', now) " +
+            "    return 1 " +
+            "else " +
+            "    redis.call('set', key .. ':tokens', tokens) " +
+            "    redis.call('set', key .. ':timestamp', now) " +
+            "    return 0 " +
+            "end";
 
     private final JedisPool jedisPool;
-    private final int limit;
+    private final int rate;  // 令牌生成速率
+    private final int capacity;  // 令牌桶容量
 
-    public RedisRateLimiter(String redisHost, int redisPort, int limit) {
+    public RedisTokenBucketRateLimiter(String redisHost, int redisPort, int rate, int capacity) {
         JedisPoolConfig poolConfig = new JedisPoolConfig();
         this.jedisPool = new JedisPool(poolConfig, redisHost, redisPort);
-        this.limit = limit;
+        this.rate = rate;
+        this.capacity = capacity;
     }
 
     public boolean tryAcquire(String key) {
         try (Jedis jedis = jedisPool.getResource()) {
-            Object result = jedis.eval(LUA_SCRIPT, 1, key, String.valueOf(limit));
+            long now = System.currentTimeMillis() / 1000;
+            Object result = jedis.eval(LUA_SCRIPT, 1, key, String.valueOf(rate), String.valueOf(capacity), String.valueOf(now), "1");
             return result.equals(1L);
         }
     }
 
     public static void main(String[] args) {
-        RedisRateLimiter rateLimiter = new RedisRateLimiter("localhost", 6379, 10);
-        String key = "api_limit_test";
+        RedisTokenBucketRateLimiter rateLimiter = new RedisTokenBucketRateLimiter("localhost", 6379, 5, 10);
+        String key = "api_limit";
 
         for (int i = 0; i < 20; i++) {
             if (rateLimiter.tryAcquire(key)) {
@@ -419,13 +450,14 @@ public class RedisRateLimiter {
                 System.out.println("请求 " + i + " 被限流");
             }
             try {
-                Thread.sleep(100); // 模拟请求间隔
+                Thread.sleep(200); // 模拟请求间隔
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 }
+
 ```
 
 分布式限流在分布式系统中是必不可少的，通过集中式协调服务、服务网关、分布式缓存等方式实现全局限流，可以有效地控制请求速率，保证系统的稳定性和高可用性。  
