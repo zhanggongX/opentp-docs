@@ -1,157 +1,222 @@
 ---
-title: 认证授权基础
+title: 认证授权
 category:
   - 认证授权
 order: 1
 tag:
   - 认证授权
-  - 认证授权基础
 ---
 
-## 认证 (Authentication) 和授权 (Authorization)的区别是什么？
-这是一个绝大多数人都会混淆的问题。首先先从读音上来认识这两个名词，很多人都会把它俩的读音搞混，所以我建议你先先去查一查这两个单词到底该怎么读，他们的具体含义是什么。
-说简单点就是：
+## 介绍
+认证（Authentication）和授权（Authorization）是信息安全领域中的两个重要概念，尽管它们经常被一起提及，但实际上有着不同的功能和目的。
 
-- **认证 (Authentication)：** 你是谁。
-- **授权 (Authorization)：** 你有权限干什么。
+### 认证（Authentication）
+认证是验证用户身份的过程，即确认用户确实是他们所声称的人。常见的认证方式包括：
+1. 密码（Password）： 用户输入用户名和密码来证明其身份。
+2. 多因素认证（MFA，Multi-Factor Authentication）： 除了密码外，还需要其他形式的验证，如短信验证码、电子邮件验证码、指纹识别等。
+3. 生物识别（Biometrics）： 使用独特的生物特征如指纹、面部识别、虹膜扫描等进行身份验证。
+4. 安全令牌（Security Tokens）： 使用硬件或软件令牌生成一次性密码（OTP，One-Time Password）。
 
-稍微正式点（啰嗦点）的说法就是：
+### 授权（Authorization）
+授权是在确认用户身份后，决定用户可以访问哪些资源和执行哪些操作的过程。授权通常在认证之后进行，是确保用户只能访问他们被允许访问的资源的一种安全措施。常见的授权机制包括：
+1. 访问控制列表（ACL，Access Control List）： 定义了哪些用户或系统进程可以访问特定的资源，以及允许的操作类型（读、写、执行等）。
+2. 基于角色的访问控制（RBAC，Role-Based Access Control）： 根据用户的角色分配权限，而不是单独分配给每个用户。比如，管理员角色有全面访问权限，而普通用户只能访问部分资源。
+3. 基于属性的访问控制（ABAC，Attribute-Based Access Control）： 根据用户的属性（如部门、职位）以及资源的属性和环境条件来进行权限分配。
+4. OAuth 和 OpenID Connect： OAuth是一种开放标准，用于在第三方应用程序和服务之间授权访问资源，而不需要共享密码。OpenID Connect是基于OAuth的身份验证协议。
 
-- **Authentication（认证）** 是验证您的身份的凭据（例如用户名/用户 ID 和密码），通过这个凭据，系统得以知道你就是你，也就是说系统存在你这个用户。所以，Authentication 被称为身份/用户验证。
-- **Authorization（授权）** 发生在 **Authentication（认证）** 之后。授权嘛，光看意思大家应该就明白，它主要掌管我们访问系统的权限。比如有些特定资源只能具有特定权限的人才能访问比如 admin，有些对系统资源操作比如删除、添加、更新只能特定人才具有。
+### 区别与联系
+- 区别： 认证是关于确认“你是谁”，而授权是关于确定“你能做什么”。
+- 联系： 认证通常是授权的前提，只有在确认用户身份后，系统才会根据用户的身份信息进行相应的授权操作。  
+> 认证：员工A登录系统，系统通过员工A的用户名和密码或其他认证方式确认其身份。  
+> 授权：系统确认员工A的身份后，根据员工A的角色（如管理员、普通员工）决定其可以访问哪些数据和执行哪些操作。  
 
-这两个一般在我们的系统中被结合在一起使用，目的就是为了保护我们系统的安全性。
-## RBAC 模型了解吗？
-系统权限控制最常采用的访问控制模型就是 **RBAC 模型** 。
-**什么是 RBAC 呢？** RBAC 即基于角色的权限访问控制（Role-Based Access Control）。这是一种通过角色关联权限，角色同时又关联用户的授权的方式。
-简单地说：一个用户可以拥有若干角色，每一个角色又可以被分配若干权限，这样就构造成“用户-角色-权限” 的授权模型。在这种模型中，用户与角色、角色与权限之间构成了多对多的关系。
-![](https://cdn.nlark.com/yuque/0/2024/png/39293052/1710415459227-a161b0b5-e33d-4289-802c-66a27538aff6.png#averageHue=%23eff8f1&clientId=u0e577d2a-0000-4&from=paste&id=ue0f4f94d&originHeight=153&originWidth=818&originalType=url&ratio=2&rotation=0&showTitle=false&status=done&style=none&taskId=ud14b8aeb-b6b3-4f08-bf17-5e04ce9ae71&title=)
-RBAC 权限模型示意图
-在 RBAC 权限模型中，权限与角色相关联，用户通过成为包含特定角色的成员而得到这些角色的权限，这就极大地简化了权限的管理。
-为了实现 RBAC 权限模型，数据库表的常见设计如下（一共 5 张表，2 张用户建立表之间的联系）：
-![](https://cdn.nlark.com/yuque/0/2024/png/39293052/1710415498961-740f2f44-43b9-454a-8216-07726db7bdcf.png#averageHue=%23e4e3e3&clientId=u0e577d2a-0000-4&from=paste&id=u165ecdd1&originHeight=1028&originWidth=1998&originalType=url&ratio=2&rotation=0&showTitle=false&status=done&style=none&taskId=ub2fc9139-dc30-4595-9cc4-a9905096cc9&title=)
-通过这个权限模型，我们可以创建不同的角色并为不同的角色分配不同的权限范围（菜单）。
-通常来说，如果系统对于权限控制要求比较严格的话，一般都会选择使用 RBAC 模型来做权限控制。
-## [什么是 Cookie ? Cookie 的作用是什么?](https://javaguide.cn/system-design/security/basis-of-authority-certification.html#%E4%BB%80%E4%B9%88%E6%98%AF-cookie-cookie-%E7%9A%84%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88)
-![](https://cdn.nlark.com/yuque/0/2024/png/39293052/1710415545054-1ff7b0da-7b63-4b1d-8ae1-d3c138bd30f6.png#averageHue=%23d9be8f&clientId=u0e577d2a-0000-4&from=paste&id=u35ec8b22&originHeight=517&originWidth=849&originalType=url&ratio=2&rotation=0&showTitle=false&status=done&style=none&taskId=u3a9f0ce3-cc26-4dbe-bfcd-143b0749392&title=)
-Cookie 和 Session 都是用来跟踪浏览器用户身份的会话方式，但是两者的应用场景不太一样。
-维基百科是这样定义 Cookie 的：
-> Cookies 是某些网站为了辨别用户身份而储存在用户本地终端上的数据（通常经过加密）。
+总之，认证和授权是信息安全中不可或缺的两部分，通过确保用户的身份并限制他们的访问权限，能够有效保护系统资源的安全和完整性。
 
-简单来说：**Cookie 存放在客户端，一般用来保存用户信息**。
-下面是 Cookie 的一些应用案例：
 
-1. 我们在 Cookie 中保存已经登录过的用户信息，下次访问网站的时候页面可以自动帮你登录的一些基本信息给填了。除此之外，Cookie 还能保存用户首选项，主题和其他设置信息。
-2. 使用 Cookie 保存 SessionId 或者 Token ，向后端发送请求的时候带上 Cookie，这样后端就能取到 Session 或者 Token 了。这样就能记录用户当前的状态了，因为 HTTP 协议是无状态的。
-3. Cookie 还可以用来记录和分析用户行为。举个简单的例子你在网上购物的时候，因为 HTTP 协议是没有状态的，如果服务器想要获取你在某个页面的停留状态或者看了哪些商品，一种常用的实现方式就是将这些信息存放在 Cookie
-4. ……
-## 如何在项目中使用 Cookie 呢？
-我这里以 Spring Boot 项目为例。
-**设置 Cookie 返回给客户端**
+## 认证-传统的会话认证
+会话认证（Session-Based Authentication）是一种传统且广泛使用的用户认证方式，特别适用于Web应用。  
+它通过在服务器端存储用户的会话信息，确保用户在访问受保护资源时能够维持一个持续的登录状态。
+
+### 会话认证流程
+1. 用户登录：用户在登录页面输入用户名和密码，并提交到服务器。
+2. 验证身份：服务器验证用户的凭证。如果验证成功，服务器创建一个会话（Session）。
+3. 生成会话ID：服务器为该会话生成一个唯一的会话ID（Session ID）。
+4. 存储会话信息：服务器将会话ID和相关的用户信息存储在服务器端（如内存、数据库、缓存等）。
+5. 发送会话ID：服务器将会话ID以cookie的形式发送到客户端浏览器。
+6. 后续请求：在后续的每个请求中，客户端浏览器都会自动将会话ID包含在cookie中发送回服务器。
+7. 验证会话：服务器接收到请求后，通过会话ID验证会话信息，从而识别用户身份并允许访问受保护的资源。
+
+### 优点
+- 简单易理解：会话认证机制直观，开发和维护成本低。
+- 适合状态管理：可以在服务器端存储大量的用户状态信息。
+- 良好的兼容性：适用于大多数Web应用和传统架构。
+
+### 缺点
+- 扩展性差：在分布式系统中，会话信息需要在不同服务器之间共享，管理复杂。
+- 服务器负担大：会话信息存储在服务器端，占用服务器资源。
+- 依赖cookie：需要确保客户端支持并启用cookie，且存在被盗用的风险。
+
+### 注意事项
+1. 安全性：
+- 使用安全的随机生成器生成会话ID，防止预测攻击。
+- 通过HTTPS传输cookie，防止中间人攻击。
+- 设置 HttpOnly 和 Secure 属性，防止客户端脚本访问 cookie。
+- 实现会话过期机制，定期清理过期会话，防止会话劫持。
+
+2. 扩展性：
+- 使用分布式会话存储（如Redis、Memcached）来共享会话信息，适应横向扩展。
+- 考虑Session Stickiness（会话粘性），在负载均衡中保持用户请求分配到同一服务器。
+
+3. 性能：
+- 优化会话存储的读写性能，避免成为系统瓶颈。
+- 使用缓存机制加速会话验证过程。
+
+## 认证-JWT 认证
+
+[详细内容参考](https://opentp.cn/blog/architect/auth/jwt.html)
+
+## 认证的安全性
+在实现认证系统时，确保安全性至关重要。认证系统的漏洞可能导致未授权访问、数据泄露以及其他安全威胁。
+
+### 1. 使用强密码和安全策略
+- 强密码要求：强制用户设置复杂的密码，包括大写字母、小写字母、数字和特殊字符。
+- 定期更改密码：要求用户定期更新密码，以减少密码泄露的风险。
+- 密码长度：建议密码长度至少为8-12个字符。
+- 防止常见密码：禁止使用常见密码，如“password123”。
+
+### 2. 密码存储和传输
+- 密码散列：永远不要以明文形式存储密码。使用强散列算法（如 bcrypt, Argon2, PBKDF2）对密码进行散列处理。
 ```java
-@GetMapping("/change-username")
-public String setCookie(HttpServletResponse response) {
-    // 创建一个 cookie
-    Cookie cookie = new Cookie("username", "Jovan");
-    //设置 cookie过期时间
-    cookie.setMaxAge(7 * 24 * 60 * 60); // expires in 7 days
-    //添加到 response 中
-    response.addCookie(cookie);
+// 使用BCrypt进行密码散列
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-    return "Username is changed!";
-}
+BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+String hashedPassword = encoder.encode(plainPassword);
+```
+- 盐值处理：为每个密码生成唯一的盐值，并将其与密码一起散列，以防止彩虹表攻击。
+- 安全传输：通过HTTPS传输敏感数据，确保数据在传输过程中不被窃取。
+
+### 3. 多因素认证（MFA）
+- 添加额外验证层：除了密码，还可以使用其他因素进行认证，如短信验证码、TOTP（基于时间的一次性密码）、硬件令牌等。
+```java
+// 示例：使用Google Authenticator进行TOTP认证
+import com.warrenstrange.googleauth.GoogleAuthenticator;
+
+GoogleAuthenticator gAuth = new GoogleAuthenticator();
+int verificationCode = gAuth.getTotpPassword(secretKey);
 ```
 
-**使用 Spring 框架提供的 @CookieValue 注解获取特定的 cookie 的值**
-```java
-@GetMapping("/")
-public String readCookie(@CookieValue(value = "username", defaultValue = "Atta") String username) {
-    return "Hey! My username is " + username;
-}
-```
+### 4. 账户锁定和速率限制
+- 账户锁定：在多次失败登录尝试后暂时锁定用户账户，以防止暴力破解。
+- 速率限制：限制来自同一IP地址的请求频率，防止暴力破解和DDoS攻击。
 
-**3) 读取所有的 Cookie 值**
-```java
-@GetMapping("/all-cookies")
-public String readAllCookies(HttpServletRequest request) {
+### 5. 安全的会话管理
+- 会话ID：使用安全的随机生成器创建唯一的会话ID，并将其存储在HTTP-only和Secure属性的Cookie中。
+- 会话过期：设置会话的过期时间，并在用户长时间未活动时使会话失效。
+- 会话固定攻击：防止会话固定攻击（Session Fixation），在用户登录时生成新的会话ID。
 
-    Cookie[] cookies = request.getCookies();
-    if (cookies != null) {
-        return Arrays.stream(cookies)
-                .map(c -> c.getName() + "=" + c.getValue()).collect(Collectors.joining(", "));
+### 6. 防止跨站点请求伪造（CSRF）
+- CSRF令牌：在每个表单中包含唯一的CSRF令牌，并在服务器端验证该令牌。
+```java
+// Spring Security中启用CSRF防护
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .csrf().and()
+            .authorizeRequests().anyRequest().authenticated();
     }
-
-    return "No cookies";
 }
 ```
-**更多关于如何在 Spring Boot 中使用 Cookie 的内容可以查看这篇文章：**[**How to use cookies in Spring Boot**](https://attacomsian.com/blog/cookies-spring-boot)**。**
-## Cookie 和 Session 有什么区别？
-**Session 的主要作用就是通过服务端记录用户的状态。** 典型的场景是购物车，当你要添加商品到购物车的时候，系统不知道是哪个用户操作的，因为 HTTP 协议是无状态的。服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了。
-Cookie 数据保存在客户端(浏览器端)，Session 数据保存在服务器端。相对来说 Session 安全性更高。如果使用 Cookie 的一些敏感信息不要写入 Cookie 中，最好能将 Cookie 信息加密然后使用到的时候再去服务器端解密。
-**那么，如何使用 Session 进行身份验证？**
-## 如何使用 Session-Cookie 方案进行身份验证？
-很多时候我们都是通过 SessionID 来实现特定的用户，SessionID 一般会选择存放在 Redis 中。举个例子：
 
-1. 用户成功登陆系统，然后返回给客户端具有 SessionID 的 Cookie 。
-2. 当用户向后端发起请求的时候会把 SessionID 带上，这样后端就知道你的身份状态了。
+### 7. 安全的JWT使用
+- 签名算法：使用强大的签名算法（如HS256或RS256）来签名JWT，防止篡改。
+- 短期有效性：设置JWT的有效期较短，减少令牌被盗用的风险。
+- 刷新令牌：使用刷新令牌机制来延长用户会话，而不需要频繁登录。
+- 敏感信息加密：不要在JWT的载荷中存储敏感信息，或对其进行加密。
 
-关于这种认证方式更详细的过程如下：
-![](https://cdn.nlark.com/yuque/0/2024/png/39293052/1710415741998-ae95e97e-0439-4089-8a34-7d3561569f00.png#averageHue=%23fce3c6&clientId=u0e577d2a-0000-4&from=paste&id=uac9434be&originHeight=341&originWidth=616&originalType=url&ratio=2&rotation=0&showTitle=false&status=done&style=none&taskId=ufe5f0bbe-81d0-473c-84db-ba514fdafb6&title=)
 
-1. 用户向服务器发送用户名、密码、验证码用于登陆系统。
-2. 服务器验证通过后，服务器为用户创建一个 Session，并将 Session 信息存储起来。
-3. 服务器向用户返回一个 SessionID，写入用户的 Cookie。
-4. 当用户保持登录状态时，Cookie 将与每个后续请求一起被发送出去。
-5. 服务器可以将存储在 Cookie 上的 SessionID 与存储在内存中或者数据库中的 Session 信息进行比较，以验证用户的身份，返回给用户客户端响应信息的时候会附带用户当前的状态。
+## 授权-RBAC模型
+基于角色的访问控制（Role-Based Access Control，RBAC）是一种常用的授权模型，它通过定义角色来简化权限管理。  
+RBAC根据用户的角色授予权限，用户通过角色来访问系统中的资源和操作。
 
-使用 Session 的时候需要注意下面几个点：
+### RBAC的基本概念
+1. 用户（User）：系统中的实际操作人员，可以是单个用户或用户组。
+2. 角色（Role）：一组权限的集合，代表特定的工作职责或功能。例如，管理员、Leader、HR等。
+3. 权限（Permission）：对系统资源的访问或操作许可。例如，读取、写入、删除权限。
+4. 资源（Resource）：系统中的实体，可以是文件、数据库记录、应用功能等。
+5. 用户-角色分配（User-Role Assignment）：将角色分配给用户。
+6. 角色-权限分配（Role-Permission Assignment）：将权限分配给角色。
 
-- 依赖 Session 的关键业务一定要确保客户端开启了 Cookie。
-- 注意 Session 的过期时间。
-## 多服务器节点下 Session-Cookie 方案如何做？
-Session-Cookie 方案在单体环境是一个非常好的身份认证方案。但是，当服务器水平拓展成多节点时，Session-Cookie 方案就要面临挑战了。
-举个例子：假如我们部署了两份相同的服务 A，B，用户第一次登陆的时候 ，Nginx 通过负载均衡机制将用户请求转发到 A 服务器，此时用户的 Session 信息保存在 A 服务器。结果，用户第二次访问的时候 Nginx 将请求路由到 B 服务器，由于 B 服务器没有保存 用户的 Session 信息，导致用户需要重新进行登陆。
-**我们应该如何避免上面这种情况的出现呢？**
-有几个方案可供大家参考：
+### RBAC的基本原则
+1. 最小权限原则：用户只应拥有完成其工作所需的最少权限。
+2. 职责分离：通过分配不同的角色来确保重要任务不由同一用户完成，以减少错误和欺诈风险。
 
-1. 某个用户的所有请求都通过特性的哈希策略分配给同一个服务器处理。这样的话，每个服务器都保存了一部分用户的 Session 信息。服务器宕机，其保存的所有 Session 信息就完全丢失了。
-2. 每一个服务器保存的 Session 信息都是互相同步的，也就是说每一个服务器都保存了全量的 Session 信息。每当一个服务器的 Session 信息发生变化，我们就将其同步到其他服务器。这种方案成本太大，并且，节点越多时，同步成本也越高。
-3. 单独使用一个所有服务器都能访问到的数据节点（比如缓存）来存放 Session 信息。为了保证高可用，数据节点尽量要避免是单点。
-4. Spring Session 是一个用于在多个服务器之间管理会话的项目。它可以与多种后端存储（如 Redis、MongoDB 等）集成，从而实现分布式会话管理。通过 Spring Session，可以将会话数据存储在共享的外部存储中，以实现跨服务器的会话同步和共享。
-## 如果没有 Cookie 的话 Session 还能用吗？
-这是一道经典的面试题！
-一般是通过 Cookie 来保存 SessionID ，假如你使用了 Cookie 保存 SessionID 的方案的话， 如果客户端禁用了 Cookie，那么 Session 就无法正常工作。
-但是，并不是没有 Cookie 之后就不能用 Session 了，比如你可以将 SessionID 放在请求的 url 里面https://javaguide.cn/?Session_id=xxx 。这种方案的话可行，但是安全性和用户体验感降低。当然，为了安全你也可以对 SessionID 进行一次加密之后再传入后端。
-## 为什么 Cookie 无法防止 CSRF 攻击，而 Token 可以？
-**CSRF(Cross Site Request Forgery)** 一般被翻译为 **跨站请求伪造** 。那么什么是 **跨站请求伪造** 呢？说简单点，就是用你的身份去发送一些对你不友好的请求。举个简单的例子：
-小壮登录了某网上银行，他来到了网上银行的帖子区，看到一个帖子下面有一个链接写着“科学理财，年盈利率过万”，小壮好奇的点开了这个链接，结果发现自己的账户少了 10000 元。这是这么回事呢？原来黑客在链接中藏了一个请求，这个请求直接利用小壮的身份给银行发送了一个转账请求,也就是通过你的 Cookie 向银行发出请求。
+### RBAC模型的实践
+#### 1. 定义角色和权限
+首先，定义系统中的角色和对应的权限。角色是权限的集合，每个角色代表一组相关的权限。
+```sql
+// 角色表
+CREATE TABLE Roles (
+    role_id INT PRIMARY KEY AUTO_INCREMENT,
+    role_name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255)
+);
+
+// 权限点表中
+CREATE TABLE Permissions (
+    permission_id INT PRIMARY KEY AUTO_INCREMENT,
+    permission_name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255)
+);
+
 ```
-<a src=http://www.mybank.com/Transfer?bankId=11&money=10000>科学理财，年盈利率过万</>
+
+#### 2. 用户-角色和角色-权限关系
+
+```sql
+// 用户角色表
+CREATE TABLE UserRoles (
+    id INT,
+    user_id INT,
+    role_id INT
+);
+
+// 角色权限表
+CREATE TABLE RolePermissions (
+    id INT,
+    role_id INT,
+    permission_id INT
+);
 ```
-上面也提到过，进行 Session 认证的时候，我们一般使用 Cookie 来存储 SessionId,当我们登陆后后端生成一个 SessionId 放在 Cookie 中返回给客户端，服务端通过 Redis 或者其他存储工具记录保存着这个 SessionId，客户端登录以后每次请求都会带上这个 SessionId，服务端通过这个 SessionId 来标示你这个人。如果别人通过 Cookie 拿到了 SessionId 后就可以代替你的身份访问系统了。
-Session 认证中 Cookie 中的 SessionId 是由浏览器发送到服务端的，借助这个特性，攻击者就可以通过让用户误点攻击链接，达到攻击效果。
-但是，我们使用 Token 的话就不会存在这个问题，在我们登录成功获得 Token 之后，一般会选择存放在 localStorage （浏览器本地存储）中。然后我们在前端通过某些方式会给每个发到后端的请求加上这个 Token,这样就不会出现 CSRF 漏洞的问题。因为，即使你点击了非法链接发送了请求到服务端，这个非法请求是不会携带 Token 的，所以这个请求将是非法的。
-![](https://cdn.nlark.com/yuque/0/2024/png/39293052/1710416434948-b3a803dc-c129-437e-af42-8f94f55ff545.png#averageHue=%23f5f5f5&clientId=u0e577d2a-0000-4&from=paste&id=ub5a80655&originHeight=389&originWidth=1051&originalType=url&ratio=2&rotation=0&showTitle=false&status=done&style=none&taskId=ud288bf41-e280-461f-8d3b-dc40748dd95&title=)
-需要注意的是：不论是 Cookie 还是 Token 都无法避免 **跨站脚本攻击（Cross Site Scripting）XSS** 。
-> 跨站脚本攻击（Cross Site Scripting）缩写为 CSS 但这会与层叠样式表（Cascading Style Sheets，CSS）的缩写混淆。因此，有人将跨站脚本攻击缩写为 XSS。
 
-XSS 中攻击者会用各种方式将恶意代码注入到其他用户的页面中。就可以通过脚本盗用信息比如 Cookie 。
-推荐阅读：[如何防止 CSRF 攻击？—美团技术团队](https://tech.meituan.com/2018/10/11/fe-security-csrf.html)
+### 优点和缺点
+#### 优点
+1. 易于管理：通过角色管理权限，可以简化权限分配和管理。
+2. 可扩展性：可以轻松添加新的角色和权限，而无需修改现有的用户权限配置。
+3. 灵活性：可以根据组织结构和业务需求定义角色和权限。
 
-## 什么是 OAuth 2.0？
-OAuth 是一个行业的标准授权协议，主要用来授权第三方应用获取有限的权限。而 OAuth 2.0 是对 OAuth 1.0 的完全重新设计，OAuth 2.0 更快，更容易实现，OAuth 1.0 已经被废弃。详情请见：[rfc6749](https://tools.ietf.org/html/rfc6749)。
-实际上它就是一种授权机制，它的最终目的是为第三方应用颁发一个有时效性的令牌 Token，使得第三方应用能够通过该令牌获取相关的资源。
-OAuth 2.0 比较常用的场景就是第三方登录，当你的网站接入了第三方登录的时候一般就是使用的 OAuth 2.0 协议。
-另外，现在 OAuth 2.0 也常见于支付场景（微信支付、支付宝支付）和开发平台（微信开放平台、阿里开放平台等等）。
-下图是 [Slack OAuth 2.0 第三方登录](https://api.slack.com/legacy/oauth) 的示意图：
-![](https://cdn.nlark.com/yuque/0/2024/png/39293052/1710416561088-9937709a-57af-43a5-8d02-0cd1d811fa95.png#averageHue=%2398cab9&clientId=u0e577d2a-0000-4&from=paste&id=ub7b6d0fb&originHeight=368&originWidth=650&originalType=url&ratio=2&rotation=0&showTitle=false&status=done&style=none&taskId=u66e5954c-3560-41ec-a501-c363f4ab677&title=)
-**推荐阅读：**
+#### 缺点
+1. 角色爆炸问题：在复杂的系统中，可能需要大量的角色来满足不同的权限组合，导致管理困难。
+2. 缺乏细粒度控制：RBAC通常不能满足非常细粒度的权限控制需求。
 
-- [OAuth 2.0 的一个简单解释](http://www.ruanyifeng.com/blog/2019/04/oauth_design.html)
-- [10 分钟理解什么是 OAuth 2.0 协议](https://deepzz.com/post/what-is-oauth2-protocol.html)
-- [OAuth 2.0 的四种方式](http://www.ruanyifeng.com/blog/2019/04/oauth-grant-types.html)
-- [GitHub OAuth 第三方登录示例教程](http://www.ruanyifeng.com/blog/2019/04/github-oauth.html)
+### RBAC与其他模型的比较
+- RBAC vs. ABAC（Attribute-Based Access Control）：
+  - RBAC基于角色进行权限分配，适用于结构清晰的环境。
+  - ABAC基于属性（如用户属性、资源属性）进行权限决策，更加灵活，但复杂度较高。
 
+- RBAC vs. ACL（Access Control List）：
+  - ACL为每个资源维护一个列表，列出可以访问该资源的用户或角色，适合细粒度控制。
+  - RBAC通过角色简化了权限管理，适合较大规模的系统。
 
+## 授权-ABAC模型
+### todo
 
+## OAuth2.0
+[OAuth2.0 详细介绍](https://opentp.cn/blog/architect/auth/oauth.html)
 
+## SSO
+[SSO 详细介绍](https://opentp.cn/blog/architect/auth/sso.html)

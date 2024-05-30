@@ -2,7 +2,7 @@
 title: SSO
 category:
   - 认证授权
-order: 3
+order: 4
 tag:
   - 认证授权
   - SSO
