@@ -8,76 +8,136 @@ tag:
   - Restful
 ---
 
-## RESTful API 规范
-![](https://cdn.nlark.com/yuque/0/2024/png/39293052/1710409866184-b2db3e97-10d7-40fb-b545-b979de1695a1.png#averageHue=%23dddddd&clientId=u7bec3be8-fa6d-4&from=paste&id=u2e0cf3de&originHeight=215&originWidth=819&originalType=url&ratio=2&rotation=0&showTitle=false&status=done&style=none&taskId=u7cded97e-3486-46a6-95e1-6b6855d87b1&title=)
-### 动作
+## RESTful 介绍
+RESTful 是一种基于 REST（Representational State Transfer，表述性状态转移）架构风格的网络服务设计原则。  
+它是由 Roy Fielding 在他的博士论文中提出的。  
+RESTful API 是一种通过 HTTP 协议进行通信的 API 设计风格，广泛应用于 Web 服务和微服务架构中。  
 
-- GET：请求从服务器获取特定资源。举个例子：GET /classes（获取所有班级）
-- POST：在服务器上创建一个新的资源。举个例子：POST /classes（创建班级）
-- PUT：更新服务器上的资源（客户端提供更新后的整个资源）。举个例子：PUT /classes/12（更新编号为 12 的班级）
-- DELETE：从服务器删除特定的资源。举个例子：DELETE /classes/12（删除编号为 12 的班级）
-- PATCH：更新服务器上的资源（客户端提供更改的属性，可以看做作是部分更新），使用的比较少，这里就不举例子了。
-### 路径（接口命名）
-路径又称"终点"（endpoint），表示 API 的具体网址。实际开发中常见的规范如下：
+## RESTful 的核心概念
+1. **资源（Resources）**
+- 一切皆资源。资源是服务器上可供访问的对象，通常对应于数据库中的实体。每个资源由一个 URI（统一资源标识符）唯一标识。
+- 例如，用户资源的 URI 可以是 `/users`，单个用户资源的 URI 可以是 `/users/{id}`。
+> 网址中不能有动词，只能有名词，API 中的名词也应该使用复数。
 
-1. **网址中不能有动词，只能有名词，API 中的名词也应该使用复数。** 因为 REST 中的资源往往和数据库中的表对应，而数据库中的表都是同种记录的"集合"（collection）。如果 API 调用并不涉及资源（如计算，翻译等操作）的话，可以用动词。比如：GET /calculate?param1=11&param2=33 。
-2. **不用大写字母，建议用中杠 - 不用下杠 _** 。比如邀请码写成 invitation-code而不是 ~~invitation_code~~ 。
-3. **善用版本化 API**。当我们的 API 发生了重大改变而不兼容前期版本的时候，我们可以通过 URL 来实现版本化，比如 http://api.example.com/v1、http://apiv1.example.com 。版本不必非要是数字，只是数字用的最多，日期、季节都可以作为版本标识符，项目团队达成共识就可。
-4. **接口尽量使用名词，避免使用动词。** RESTful API 操作（HTTP Method）的是资源（名词）而不是动作（动词）。
+2. **表示（Representation）**
+- 资源的表示是指资源的具体内容，可以有多种格式，如 JSON、XML、HTML 等。
+- 客户端和服务器通过资源的表示进行交互。
 
-来举个实际的例子来说明一下吧！现在有这样一个 API 提供班级（class）的信息，还包括班级中的学生和教师的信息，则它的路径应该设计成下面这样。
-```
-GET    /classes：列出所有班级
-POST   /classes：新建一个班级
-GET    /classes/{classId}：获取某个指定班级的信息
-PUT    /classes/{classId}：更新某个指定班级的信息（一般倾向整体更新）
-PATCH  /classes/{classId}：更新某个指定班级的信息（一般倾向部分更新）
-DELETE /classes/{classId}：删除某个班级
-GET    /classes/{classId}/teachers：列出某个指定班级的所有老师的信息
-GET    /classes/{classId}/students：列出某个指定班级的所有学生的信息
-DELETE /classes/{classId}/teachers/{ID}：删除某个指定班级下的指定的老师的信息
-```
-反例
-```
-/getAllclasses
-/createNewclass
-/deleteAllActiveclasses
-```
-理清资源的层次结构，比如业务针对的范围是学校，那么学校会是一级资源:/schools，老师: /schools/teachers，学生: /schools/students 就是二级资源。
-### 过滤信息（Filtering）
-如果我们在查询的时候需要添加特定条件的话，建议使用 url 参数的形式。比如我们要查询 state 状态为 active 并且 name 为 guidegege 的班级：
-```
-GET    /classes?state=active&name=guidegege
-```
-比如我们要实现分页查询：
-```
-GET    /classes?page=1&size=10 //指定第1页，每页10个数据
-```
-### 状态码（Status Codes）
-**状态码范围：**
+3. **状态转移（State Transfer）**
+- 客户端通过对资源进行操作（HTTP 动词）来实现状态转移。每个请求都会导致服务器上的资源状态发生变化。
 
-| 2xx：成功 | 3xx：重定向 | 4xx：客户端错误 | 5xx：服务器错误 |
-| --- | --- | --- | --- |
-| 200 成功 | 301 永久重定向 | 400 错误请求 | 500 服务器错误 |
-| 201 创建 | 304 资源未修改 | 401 未授权 | 502 网关错误 |
-|  |  | 403 禁止访问 | 504 网关超时 |
-|  |  | 404 未找到 |  |
-|  |  | 405 请求方法不对 |  |
+4. **无状态（Stateless）**
+- 每个请求都是独立的，服务器不保存客户端的状态。所有的状态信息都包含在请求中，例如通过 URL、头部、请求体等传递。
 
-## RESTful 的极致 HATEOAS
-**RESTful 的极致是 hateoas ，但是这个基本不会在实际项目中用到。**
-**Hypermedia as the Engine of Application State,**
-上面是 RESTful API 最基本的东西，也是我们平时开发过程中最容易实践到的。实际上，RESTful API 最好做到 Hypermedia，即返回结果中提供链接，连向其他 API 方法，使得用户不查文档，也知道下一步应该做什么。
-上面是 RESTful API 最基本的东西，也是我们平时开发过程中最容易实践到的。实际上，RESTful API 最好做到 Hypermedia，即返回结果中提供链接，连向其他 API 方法，使得用户不查文档，也知道下一步应该做什么。
-比如，当用户向 api.example.com 的根目录发出请求，会得到这样一个返回结果
+## HTTP 动词
+RESTful API 使用标准的 HTTP 动词来对资源进行操作：
+- GET：读取资源。用于获取资源的表示。
+> 例子：`GET /users`（获取所有用户），`GET /users/1`（获取 ID 为 1 的用户）
 
-```javascript
-{"link": {
-  "rel":   "collection https://www.example.com/classes",
-  "href":  "https://api.example.com/classes",
-  "title": "List of classes",
-  "type":  "application/vnd.yourformat+json"
-}}
+- POST：创建资源。用于向服务器提交数据并创建新资源。
+> 例子：`POST /users`（创建新用户）
+
+- PUT：更新资源。用于更新已存在的资源。
+> 例子：`PUT /users/1`（更新 ID 为 1 的用户）
+
+- DELETE：删除资源。用于删除已存在的资源。
+> 例子：`DELETE /users/1`（删除 ID 为 1 的用户）
+
+- PATCH：部分更新资源。用于对资源进行部分更新。
+> 例子：`PATCH /users/1`（部分更新 ID 为 1 的用户）
+
+## RESTful API 设计原则
+1. 资源命名
+- 资源的 URI 应该使用名词，并且尽量采用复数形式。
+> 例子：`/users` 表示用户资源集合，`/users/1` 表示特定用户资源。
+
+2. 使用 HTTP 动词
+- 使用适当的 HTTP 动词对资源进行操作，保持语义一致性。
+
+3. 版本控制
+- 在 URI 中加入版本号，以便对 API 进行版本控制。
+> 例子：`/v1/users`
+
+4. 状态码
+- 使用标准的 HTTP 状态码表示请求的结果。
+  - 200 OK：请求成功。
+  - 201 Created：资源创建成功。
+  - 204 No Content：请求成功但无返回内容（通常用于 DELETE 操作）。
+  - 400 Bad Request：请求格式错误。
+  - 401 Unauthorized：未经授权。
+  - 404 Not Found：资源未找到。
+  - 500 Internal Server Error：服务器内部错误。
+
+5. HATEOAS（Hypermedia As The Engine Of Application State）
+- 通过超媒体驱动应用状态。响应中包含指向其他资源的链接，使客户端能够发现新的资源和操作。
+```json
+// 例子
+{
+  "id": 1,
+  "name": "John Doe",
+  "links": [
+    {
+      "rel": "self",
+      "href": "/users/1"
+    },
+    {
+      "rel": "friends",
+      "href": "/users/1/friends"
+    }
+  ]
+}
 ```
-上面代码表示，文档中有一个 link 属性，用户读取这个属性就知道下一步该调用什么 API 了。rel 表示这个 API 与当前网址的关系（collection 关系，并给出该 collection 的网址），href 表示 API 的路径，title 表示 API 的标题，type 表示返回类型 Hypermedia API 的设计被称为HATEOAS
 
+6. 内容协商（Content Negotiation）
+- 客户端和服务器通过 HTTP 头部来协商资源的表示格式。
+> 例子：客户端可以通过 `Accept` 头部指定希望接收的格式（如 `application/json`），服务器根据该头部返回相应格式的响应。
+
+## RESTful API 示例
+假设我们有一个用户资源：
+#### 获取所有用户
+- 请求：`GET /users`
+- 响应：
+  ```json
+  [
+    {"id": 1, "name": "laozhang"},
+    {"id": 2, "name": "laoli"}
+  ]
+  ```
+
+#### 获取特定用户
+- 请求：`GET /users/1`
+- 响应：
+  ```json
+  {"id": 1, "name": "laozhang"}
+  ```
+
+#### 创建新用户
+- 请求：`POST /users`
+- 请求体：
+  ```json
+  {"name": "laoli"}
+  ```
+- 响应：`201 Created`
+  ```json
+  {"id": 1, "name": "laoli"}
+  ```
+
+#### 更新用户
+- 请求：`PUT /users/1`
+- 请求体：
+  ```json
+  {"name": "laozhanga"}
+  ```
+- 响应：`200 OK`
+  ```json
+  {"id": 1, "name": "laozhanga"}
+  ```
+
+#### 删除用户
+- 请求：`DELETE /users/1`
+- 响应：`204 No Content`
+
+## 总结
+RESTful 是一种设计 Web 服务的架构风格，通过定义清晰的资源和操作规则，提供了一种简洁、高效的方式来进行客户端和服务器之间的通信。  
+它使用标准的 HTTP 协议，通过明确的 URI 和 HTTP 动词来操作资源，具有无状态、可扩展、易于理解和实现等优点。  
+在设计 RESTful API 时，需要遵循资源命名、HTTP 动词使用、版本控制、状态码和 HATEOAS 等原则，以确保 API 的一致性和易用性。
