@@ -2,7 +2,7 @@
 title: Java IO
 category:
   - Java
-order: 3
+order: 2
 tag:
   - Java基础
   - Java-IO

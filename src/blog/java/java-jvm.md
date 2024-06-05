@@ -2,7 +2,7 @@
 title: JVM
 category:
   - Java
-order: 6
+order: 5
 tag:
   - Java基础
   - Java-JVM
