@@ -2,7 +2,7 @@
 title: JVM
 category:
   - Java
-order: 5
+order: 50
 tag:
   - Java基础
   - JVM
@@ -96,6 +96,13 @@ jinfo -flag +PrintGC vmid 增加打印GC配置。
 #### jmap
 堆存储快照
 生成快照 jmap -dump:format=b,file=\opt\heap.hprof 17340
+
+```shell
+jmap -dump:format=b,file=./heap.hprof 2840
+Dumping heap to /home/work/heap.hprof ...
+Heap dump file created
+```
+
 jmap -heap vmid 查看堆的快照
 #### jstack
 jvm 的线程的堆栈信息

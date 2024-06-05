@@ -2,7 +2,7 @@
 title: JVM工具详解
 category:
   - Java
-order: 6
+order: 60
 tag:
   - Java基础
   - Java-JVM

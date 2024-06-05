@@ -2,7 +2,7 @@
 title: Java新特性
 category:
   - Java
-order: 7
+order: 70
 tag:
   - Java基础
   - JDK

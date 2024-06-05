@@ -2,7 +2,7 @@
 title: Java并发
 category:
   - Java
-order: 3
+order: 30
 tag:
   - Java基础
   - Java-concurrent
@@ -408,7 +408,9 @@ coreSize maxSize threadFactory, 等待队列，拒绝策略，回收时间/单�
 1. 抛出异常，
 2. 使用提交线程2的线程1直接执行线程2。
 3. 直接拒绝
-4. 丢弃最早提交的未执行线程
+4. 丢弃最早提交的未执行线程  
+
+[线程池详解](https://opentp.cn/blog/java/java-tp.html)
 
 ## Future & CompletableFuture
 

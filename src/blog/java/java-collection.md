@@ -2,7 +2,7 @@
 title: Java集合
 category:
   - Java
-order: 4
+order: 40
 tag:
   - Java基础
   - Java-collection

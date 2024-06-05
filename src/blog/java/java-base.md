@@ -2,7 +2,7 @@
 title: Java基础
 category:
   - Java
-order: 1
+order: 10
 tag:
   - Java基础
 ---

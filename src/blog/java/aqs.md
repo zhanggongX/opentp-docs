@@ -2,7 +2,7 @@
 title: AQS
 category:
   - Java
-order: 4
+order: 32
 tag:
   - Java基础
   - AQS
