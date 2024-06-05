@@ -230,3 +230,11 @@ private void reject(Runnable command) {
    - 可以用来执行延迟任务或周期性任务，支持定时执行任务的功能。
    - 适用于需要执行定时任务的场景，比如定时任务调度、周期性数据处理等。
    - ScheduledThreadPool 任务队列使用 DelayedWorkQueue 添加元素满了之后会自动扩容原来容量的 1/2，最大扩容可达 Integer.MAX_VALUE，使用不当 OOM。
+
+## 线程池的使用建议
+1. 使用 ThreadPoolExecutor 构造线程池。
+2. 不同业务使用不同的线程池
+3. 线程池要命名，容易定位问题
+4. 合理设置线程池参数，建议 CPU 密集型 N+1, IO 密集型 2N
+> 网络读取，文件读取，数据库读取，这类都是 IO 密集型。
+5. 线程池中的的线程的 ThreadLocal 记得删除

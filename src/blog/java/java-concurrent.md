@@ -1,5 +1,5 @@
 ---
-title: Java并发
+title: 并发
 category:
   - Java
 order: 30

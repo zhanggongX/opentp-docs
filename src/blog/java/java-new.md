@@ -1,5 +1,5 @@
 ---
-title: Java新特性
+title: 新特性
 category:
   - Java
 order: 70
