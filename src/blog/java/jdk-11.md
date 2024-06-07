@@ -1,5 +1,5 @@
 ---
-title: JDk11新特性
+title: JDk11新特性(LTS)
 category:
   - Java
 order: 73
