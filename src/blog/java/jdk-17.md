@@ -2,7 +2,7 @@
 title: JDk17新特性(LTS)
 category:
   - Java
-order: 74
+order: 75
 tag:
   - Java基础
   - JDK
@@ -76,7 +76,7 @@ public class ForeignMemoryExample {
 }
 ```
 
-### 5. 向量 API（孵化）
+### 5. 向量 API（二次孵化）
 
 Vector API 允许开发者利用现代 CPU 的 SIMD（单指令多数据）指令来编写高性能的向量运算代码，从而提升应用的性能。
 
@@ -97,7 +97,7 @@ public class VectorExample {
 }
 ```
 
-### 7. 预览特性：基于类的延迟初始化
+### 6. 基于类的延迟初始化（预览）
 
 延迟初始化允许开发者在类加载过程中延迟某些类的初始化，从而提高启动性能和减少内存占用。
 
@@ -113,7 +113,7 @@ public class LazyInitializationExample {
 }
 ```
 
-### 8. 增强的伪随机数生成器（JEP 356）
+### 7. 增强的伪随机数生成器（JEP 356）
 
 JDK 17 增强了伪随机数生成器 API，提供了更多种类的伪随机数生成器，并使得这些生成器的接口更加统一和灵活。
 
@@ -128,7 +128,7 @@ public class RandomExample {
 }
 ```
 
-### 9. Unix-Domain Socket Channels
+### 8. Unix-Domain Socket Channels
 
 JDK 17 增强了对 Unix-Domain Sockets 的支持，通过 `java.nio.channels` 提供了高效的本地进程间通信（IPC）。
 
@@ -155,15 +155,6 @@ public class UnixDomainSocketExample {
 }
 ```
 
-### 10. `Strongly Encapsulate JDK Internals`
-
-JDK 17 进一步强封装了 JDK 内部 API，不再允许通过反射等方式访问 JDK 内部类，强化了应用的安全性和代码的健壮性。
-
-```bash
-# 强封装 JDK 内部类
-java -jar myapp.jar
-```
-
-### 11. 移除了 Experimental AOT 和 JIT 编译器
+### 9. 移除了 Experimental AOT 和 JIT 编译器
 
 JDK 17 移除了实验性的 AOT（Ahead-Of-Time）和 JIT（Just-In-Time）编译器，这些编译器的功能已经被新的优化技术和工具所取代。
