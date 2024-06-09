@@ -2,7 +2,7 @@
 title: KMP算法
 category:
   - 算法
-order: 3
+order: 100
 tag:
   - 算法
   - 字符匹配算法

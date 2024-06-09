@@ -2,7 +2,7 @@
 title: 快速幂
 category:
   - 算法
-order: 2
+order: 101
 tag:
   - 算法
 ---
