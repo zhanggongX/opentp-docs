@@ -148,6 +148,8 @@ MVC 是模型(Model)、视图(View)、控制器(Controller)的简写，其核心
 6. DispaterServlet 把返回的 Model 传给 View（视图渲染）。
 7. 把 View 返回给请求者（浏览器）
 
+[Spring三级缓存](https://www.51cto.com/article/747437.html)
+
 ### 统一异常处理
 使用到 @ControllerAdvice + @ExceptionHandler。
 

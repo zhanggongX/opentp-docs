@@ -12,6 +12,8 @@ tag:
 ## ZGC 介绍
 ZGC（Z Garbage Collector）是 Java 虚拟机（JVM）的一种垃圾收集器，专为高吞吐量和低延迟而设计。在 JDK 11 中首次引入，并在后续版本中不断优化和增强。
 
+> ZGC 更详细的内幕还在学习中。。。
+
 ## ZGC 的主要特性
 
 1. 低延迟  
@@ -39,14 +41,11 @@ ZGC 的内存布局。与 G1一样，ZGC 也采用基于 Region 的堆内存布�
 - 中型 Region(Medium Region): 容量固定为 32MB，用于放置大于等于 256KB 但小于 4MB 的对象。 
 - 大型 Region(Large Region): 容量不固定，可以动态变化，但必须为 2MB 的整数倍，用于放置 4MB 或以上的大对象。 每个大型 Region 中只会存放一个大对象，这也预示着虽然名字叫作 “大型Region”， 但它的实际容量完全有可能小于中型 Region，最小容量可低至 4MB。大型 Region 在 ZGC 的实现中是不会被重分配 (重分配是ZGC的一种处理动作，用于复制对象的收集器阶段) 的，因为复制一个大对象的代价非常高昂。  
 
-### 并发整理算法的实现
+## ZGC垃圾回收过程
 
 ### 1. 并发标记
-ZGC 的并发标记阶段采用了标记-清除（Mark-Sweep）算法。它在不暂停应用程序线程的情况下标记所有活动对象。标记阶段分为初始标记（Initial Marking）、并发标记（Concurrent Marking）和最终标记（Final Marking）。
-
-- 初始标记：快速标记从根对象直接引用的对象。
-- 并发标记：并发扫描整个堆，标记所有活动对象。
-- 最终标记：完成所有未完成的标记任务，确保没有漏掉任何活动对象。
+并发标记是遍历对象图做可达性分析的阶段，前后也要经过类似于 G1 的初始标记、 最终标记 (尽管ZGC中的名字不叫这些) 的短暂停顿，而且这些停顿阶段所做的事情在目标上也是相类似的。  
+ZGC 的标记是在指针上而不是在对象上进行的，标记阶段会更新染色指针中的 Marked 0、Marked 1 标志位。
 
 ### 2. 并发重定位
 并发重定位（Concurrent Relocation）是 ZGC 的一个重要特性。它允许在不停止应用程序的情况下移动对象，从而减少内存碎片。
@@ -151,3 +150,8 @@ ZGC 作为一个前沿的垃圾收集器，不断在性能、稳定性和功能�
 ## 总结
 
 ZGC 在 JDK 21 中得到了显著的增强和改进，进一步巩固了其作为低延迟、高性能垃圾收集器的地位。它的低停顿时间、大规模堆支持、并发性和高效内存管理使得它非常适合需要处理大量数据和高并发任务的应用。无论是在大数据处理、实时系统、云计算还是高性能应用中，ZGC 都提供了强大的垃圾收集能力，为 Java 应用程序的稳定性和性能保驾护航。
+
+- ZGC 设计文档：[https://wiki.openjdk.org/display/zgc/Main](https://wiki.openjdk.org/display/zgc/Main)
+- ZGC 实现文档：[https://openjdk.org/projects/zgc/](https://openjdk.org/projects/zgc/)  
+- ZGC 性能报告：[https://wiki.openjdk.org/display/zgc/Main](https://wiki.openjdk.org/display/zgc/Main) 
+- 视频介绍： [https://www.youtube.com/watch?v=kF_r3GE3zOo](https://www.youtube.com/watch?v=kF_r3GE3zOo)
