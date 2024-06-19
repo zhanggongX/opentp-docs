@@ -184,11 +184,12 @@ retransform /tmp/com/example/demo/arthas/user/UserController.class
 
 ### CPU 高的问题
 - 非 Arthas 手段
-1. jps 找到进程
-2. top -Hp 找到具体线程
-3. 根据线程ID，执行 jstack。
-- Arthas   
+  1. top/jps 查看进程，得到 VMID     
+  2. top -Hp VMID 查看占用 CPU 最高的线程的 PID      
+  3. 把 2 中获取的线程 ID 转成 16 进制 0xPID。   
+  4. jstack -l VMID | grep -50 0xPID。查看线程信息。     
 
+- Arthas   
 执行 thread -n 10 即可，返回最耗时的 10 个线程。  
 再执行 threa pid, 展示具体线程信息。
 
