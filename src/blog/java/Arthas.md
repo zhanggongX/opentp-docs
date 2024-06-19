@@ -117,7 +117,7 @@ retransform /tmp/com/example/demo/arthas/user/UserController.class
 | 命令 | 说明 | 示例 |
 | --- | --- | --- |
 | cls  | 清屏  |  |
-| session  | 现实会话信息，pid、session_id  |  |
+| session  | 显示 Arthas 会话信息，pid、session_id  |  |
 | help  |  |  |
 | reset  | 重置所有的增强代码  |  |
 | version  | arthas 版本  |  |
@@ -145,7 +145,7 @@ retransform /tmp/com/example/demo/arthas/user/UserController.class
 | vmtool  | 获取内存中的对象执行，或者强制GC  | 见上方详细信息  |
 | perfcounter  | 查看当前jvm的 pref counter 信息  | perfcounter -d  |
 | logger  | 查看程序日志配置信息  | logger  |
-| getstatic  | 查看类的静态熟悉，建设使用 ognl 命令  | getstatic class field_name  |
+| getstatic  | 查看类的静态属性，建议使用 ognl 命令  | getstatic class field_name  |
 | ognl  | 执行ognl表达式  | 见上方详细使用说明  |
 | mbean  | 查看 managed bean 信息（JMX）  | mbean -i 1000 -n 50 java.lang:type=Threading *Count  |
 | heapdump  | 约等于 jmap heap dump  | heapdump --live /tmp/dump.hprof  |
@@ -172,4 +172,37 @@ retransform /tmp/com/example/demo/arthas/user/UserController.class
 | tt  | 方法执行数据的时空隧道，记录下指定方法每次调用的入参和返回信息，并能对这些不同的时间下调用进行观测  | tt -t demo.MathGame primeFactors、tt -t xTest print 'params[1] instanceof Integer'  |
 | profiler  | 生成火焰图  | profiler start、 profiler stop --format html、 查看地址：http://localhost:3658/arthas-output/  |
 | jfr  | 用于收集有关正在运行的 Java 应用程序的诊断和分析数据的工具  | jfr start -n myRecording --duration 60s -f /tmp/myRecording.jfr、 jfr stop -r 1  |
+
+## 使用示例
+### 接口慢，定位问题
+使用 trace 命令，可以很清晰的显示接口整个调用链，以及耗时时间、循环调用次数、循环调用单次耗时，总耗时等。  
+定位到具体的方法，进行优化。
+> PS：接口慢的问题，大多还是查数据库慢导致的，最终还是进行数据查询优化。
+
+### 服务整体慢
+真对这种问题，查接口单次耗时就没啥意义了，这里可以用 moniter 进行监控 -c 可以指定统计周期，统计一个周期内接口的 RT。
+
+### CPU 高的问题
+- 非 Arthas 手段
+1. jps 找到进程
+2. top -Hp 找到具体线程
+3. 根据线程ID，执行 jstack。
+- Arthas   
+
+执行 thread -n 10 即可，返回最耗时的 10 个线程。  
+再执行 threa pid, 展示具体线程信息。
+
+### 哪里调用的方法
+有一个方法，多个地方都在调用。想确认哪里调用的怎么办。  
+stack 命令解君愁。
+
+### 本地跑没问题，线上不行，是不是类不一样啊
+jad 命令可以查看线上类信息。
+
+### 想看看线上某个接口，入参是啥，又返回了啥
+watch 命令可以帮到您。
+
+### 有一个接口返回的值和预想的不同
+ognl / vmtools 都是可以的，直接在线上调用方法，Spring 项目也是某问题的啦。
+> 调用查询肯定没问题，调用更删改，还是要谨慎。。
 
