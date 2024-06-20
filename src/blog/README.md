@@ -10,7 +10,7 @@ dir:
 **个人能力有限，如果您发现博客中有错误的地方，欢迎在文章下方评论中指出。**
 
 ### Java
-关于 Java 开发语言的一些文章，包括基础、JVM、JDK 的新特性等等。
+关于 Java 开发语言的一些文章，包括 Java 基础、JVM、JVM 监控、Arthas、JDK 的新特性等等。
 
 ### 算法
 常见的一些算法记录。
@@ -33,7 +33,6 @@ MySQL、Redis、Es、Mongo、Starrocks 相关的文章
 
 ### 常用中间件
 日常用到的中间件，几乎都在这个目录内。
-- Arthas
 - ZK
 - Docker
 - RocketMQ
