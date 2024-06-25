@@ -424,14 +424,84 @@ Tomcat 的类加载优先自己加载，自己加载不了再让父加载器加�
 
 ## JVM 常用参数
 -Xms4g -Xmx4g -Xmn2g -Xss1024K   
--XX:ParallelGCThreads=20 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC   
--XX:+UseCMSCompactAtFullCollection -XX:CMSInitiatingOccupancyFraction=80   
--XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintTenuringDistribution   
--XX:+PrintHeapAtGC -XX:+PrintReferenceGC -XX:+PrintGCApplicationStoppedTime   
--XX:+PrintSafepointStatistics    
--XX:PrintSafepointStatisticsCount=1   
--Xloggc:/opt/gc/gc-%t.log -XX:+UseGCLogFileRotation   
--XX:NumberOfGCLogFiles=14 -XX:GCLogFileSize=100M。  
+-XX:ParallelGCThreads=4   
+-XX:+UseConcMarkSweepGC   
+-XX:+UseParNewGC     
+-XX:+UseCMSCompactAtFullCollection   
+-XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly    
+
+### 如果需要调查 GC，加如下参数。
+- 基本 GC 参数
+```shell
+-XX:+PrintGCDetails   
+-XX:+PrintGCDateStamps   
+-XX:+PrintHeapAtGC   
+```
+- 如果需要更详细的日子
+```shell
+# 软弱虚引用回收打印
+-XX:+PrintReferenceGC 
+# 输出自适应大小策略的调整信息，通常用于调优堆的大小
+-XX:+PrintAdaptiveSizePolicy
+# 在对象从年轻代晋升到老年代失败时打印日志
+-XX:+PrintPromotionFailure
+# 在每次 GC 后打印对象的晋升年龄分布。
+-XX:+PrintTenuringDistribution     
+# 在每次 GC 后打印字符串表的统计信息
+-XX:+PrintStringTableStatistics
+# 打印由于 GC 造成的应用程序停顿时间
+-XX:+PrintGCApplicationStoppedTime   
+# 打印应用程序并发运行时间和每次 GC 事件之间的间隔
+-XX:+PrintGCApplicationConcurrentTime
+# 启用安全点统计信息的输出
+-XX:+PrintSafepointStatistics   
+# 打印安全点统计信息的输出次数  
+-XX:PrintSafepointStatisticsCount=1     
+```
+ParNew 专属参数
+```shell
+# 打印 ParNew GC 事件的详细信息，包括年轻代的使用情况和回收统计。
+-XX:+PrintParNewGC
+# 在 ParNew GC 时，如果对象晋升失败（无法从年轻代晋升到老年代），则打印详细日志。
+-XX:+PrintPromotionFailure
+```
+
+CMS 专属参数
+```shell
+# CMS GC 开始时的统计信息。
+-XX:+PrintCMSInitiationStatistics
+# 打印 CMS GC 的详细统计信息，包括每个阶段的时间消耗。
+-XX:+PrintCMSStatistics
+# 在 CMS 垃圾回收的每个阶段打印日志。
+-XX:+PrintCMSInitiation
+# 打印 CMS 并发阶段的详细日志。
+-XX:+PrintCMSConcurrentPhases
+# 在 CMS 垃圾回收的最终标记阶段打印详细日志。
+-XX:+PrintCMSFinalRemark
+# 在 CMS 垃圾回收的预清理阶段打印详细日志。
+-XX:+PrintCMSPrecleaning
+# 打印 CMS 触发的 Full GC 日志。
+-XX:+PrintCMSFullGCs
+# 在 CMS Full GC 完成后，打印类直方图。
+-XX:+PrintClassHistogramAfterFullGC
+# 在 CMS GC 的每个阶段打印类直方图。
+-XX:+PrintCMSClassHistogram
+# 在 CMS 重新标记后，打印线程堆栈跟踪。
+-XX:+PrintCMSRemarPostThreadStackTrace
+```
+
+- GC 文件相关日志
+```shell
+# 开启 GC 日志文件滚动
+-XX:+UseGCLogFileRotation     
+# GC 文件最大数量
+-XX:NumberOfGCLogFiles=10   
+# GC 文件大小
+-XX:GCLogFileSize=500M  
+# GC 日志文件地址
+-Xloggc:/home/work/gc.log
+```
+
 
 -Xms 最小堆  
 -Xmx 最大堆  
