@@ -458,13 +458,6 @@ Tomcat 的类加载优先自己加载，自己加载不了再让父加载器加�
 # 打印安全点统计信息的输出次数  
 -XX:PrintSafepointStatisticsCount=1     
 ```
-ParNew 专属参数
-```shell
-# 打印 ParNew GC 事件的详细信息，包括年轻代的使用情况和回收统计。
--XX:+PrintParNewGC
-# 在 ParNew GC 时，如果对象晋升失败（无法从年轻代晋升到老年代），则打印详细日志。
--XX:+PrintPromotionFailure
-```
 
 CMS 专属参数
 ```shell
