@@ -2,10 +2,10 @@
 title: 自定义 Springboot-starter 属性加载失败
 category:
   - 常用框架
-order: 1
+order: 21
 tag:
   - frame
-  - Spring
+  - Springboot
 ---
 
 ### 问题描述
