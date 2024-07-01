@@ -1,5 +1,5 @@
 ---
-title: 二分查找
+title: 二分算法
 category:
   - 算法
 order: 1

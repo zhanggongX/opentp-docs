@@ -2,7 +2,7 @@
 title: 单调栈
 category:
   - 算法
-order: 3
+order: 30
 tag:
   - 算法
   - 单调栈
