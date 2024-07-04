@@ -28,47 +28,24 @@ new SpringApplication 源码：
 ```java
 // Springboot 3.2.0
 public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
-    // 初始化一个用于存储源类的 LinkedHashSet
-    this.sources = new LinkedHashSet<>();
-    // 设置默认的 Banner 显示模式为控制台输出
-    this.bannerMode = Mode.CONSOLE;
-    // 设置是否在应用启动时记录启动信息，默认值为 true
-    this.logStartupInfo = true;
-    // 设置是否从命令行参数中添加属性，默认值为 true
-    this.addCommandLineProperties = true;
-    // 设置是否添加默认的 ConversionService，默认值为 true
-    this.addConversionService = true;
-    // 设置应用是否以 headless 模式运行，默认值为 true（headless 模式指没有图形界面的模式）
-    this.headless = true;
-    // 设置是否注册 JVM 关闭钩子来关闭 Spring 应用上下文，默认值为 true
-    this.registerShutdownHook = true;
-    // 初始化一个空的集合来存储额外的 Spring Profile
-    this.additionalProfiles = Collections.emptySet();
-    // 初始化标识符，表示是否使用了自定义环境，默认值为 false
-    this.isCustomEnvironment = false;
-    // 设置是否启用延迟初始化，默认值为 false（即所有 bean 都在应用启动时立即初始化）
-    this.lazyInitialization = false;
-    // 设置应用上下文工厂为默认工厂
-    this.applicationContextFactory = ApplicationContextFactory.DEFAULT;
-    // 设置应用启动监视器，默认值为无监视（`ApplicationStartup.DEFAULT`）
-    this.applicationStartup = ApplicationStartup.DEFAULT;
-    // 设置资源加载器（用于加载资源文件）
+    // 保存资源加载器实例，用于加载应用程序资源
     this.resourceLoader = resourceLoader;
-    // 断言主类（`primarySources`）不能为 null
+    // 确保 primarySources 参数不为空
     Assert.notNull(primarySources, "PrimarySources must not be null");
-    // 将主类（`primarySources`）转换为 LinkedHashSet 进行存储
     this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-    // ***** 根据类路径环境推断应用的 Web 应用类型
+    // 推断当前应用程序类型（如：SERVLET、REACTIVE、NONE）
     this.webApplicationType = WebApplicationType.deduceFromClasspath();
-    // 从 `spring.factories` 中获取 `BootstrapRegistryInitializer` 实例列表
-    this.bootstrapRegistryInitializers = new ArrayList<>(this.getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
-    // ***** 从 `spring.factories` 中获取并设置 `ApplicationContextInitializer` 实例列表
-    this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class));
-    // ***** 从 `spring.factories` 中获取并设置 `ApplicationListener` 实例列表
-    this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class));
-    // **** 试图推断出主应用类（即包含 `main` 方法的类）
-    this.mainApplicationClass = this.deduceMainApplicationClass();
+    // 从 Spring 工厂加载所有的 BootstrapRegistryInitializer 实例，并初始化 bootstrapRegistryInitializers 列表
+    this.bootstrapRegistryInitializers = new ArrayList<>(
+            getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
+    // 加载所有的 META-INF/spring.factories 中的 ApplicationContextInitializer 实例，并设置应用上下文初始化器
+    setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+    // 加载所有的 META-INF/spring.factories  中的 ApplicationListener 实例，并设置应用程序事件监听器
+    setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+    // 推断并设置主应用程序类（通常是包含 main 方法的类）
+    this.mainApplicationClass = deduceMainApplicationClass();
 }
+
 
 ```
 主要的步骤有：
@@ -80,83 +57,79 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 ## org.springframework.boot.SpringApplication#run(java.lang.String...)
 源代码：
 ```java
+// Springboot 3.2.0
 public ConfigurableApplicationContext run(String... args) {
-    // 创建并记录应用启动的时间，生成一个启动监视对象
+    // 创建应用启动的记录实例
     Startup startup = Startup.create();
-    // 如果配置了注册关闭钩子，启用 JVM 关闭钩子的注册
+    // 如果启用了关闭钩子注册，则在 JVM 关闭时添加一个钩子来关闭 Spring 应用
     if (this.registerShutdownHook) {
         SpringApplication.shutdownHook.enableShutdownHookAddition();
     }
-    // 创建引导上下文，通常用于应用启动前的一些初始化操作
+    // 创建引导上下文，用于在应用程序启动之前存储必要的信息
     DefaultBootstrapContext bootstrapContext = createBootstrapContext();
-    // 声明一个可配置的应用上下文对象
+    // 定义应用上下文变量，稍后会被初始化
     ConfigurableApplicationContext context = null;
-    // 配置 headless 属性，确保在无头模式下运行
+    // 配置系统属性来控制 GUI 相关行为，以支持无头环境（如服务器环境）
     configureHeadlessProperty();
-    // 获取运行监听器列表，这些监听器会在应用启动的不同阶段触发相应的事件
+    // 获取应用程序运行时的监听器集合
     SpringApplicationRunListeners listeners = getRunListeners(args);
-    // 通知监听器应用正在启动，引导上下文和主应用类作为参数传入
+    // 通知所有监听器应用程序正在启动
     listeners.starting(bootstrapContext, this.mainApplicationClass);
-    
     try {
-        // 封装应用启动参数
+        // 创建应用程序参数实例，用于封装传递给应用程序的命令行参数
         ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-        // ***** 准备环境，包括加载配置文件和设置系统属性
+        // 准备应用程序环境（如系统属性、环境变量等），并通知监听器
         ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
-        // ***** 打印启动 Banner（可以在控制台或日志中显示应用的名称和版本等信息）
+        // 打印 Banner
         Banner printedBanner = printBanner(environment);
-        // ***** 创建应用上下文，决定使用哪种类型的应用上下文（如 Web 应用或非 Web 应用）
+        // 创建应用上下文实例
         context = createApplicationContext();
-        // 设置应用启动监视对象
+        // 设置应用程序的启动记录实例到上下文中
         context.setApplicationStartup(this.applicationStartup);
-        // ***** 准备上下文，包括加载所有的 bean 定义和资源
+        // 准备应用程序上下文，包括加载各种资源、设置配置等
         prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
-        // ***** 刷新上下文，正式启动 Spring 容器，触发 bean 的初始化和依赖注入，真正去创建 Bean 实例。
+        // 刷新上下文，在这里创建所有的 Bean
         refreshContext(context);
-        // 在上下文刷新后执行自定义的后处理逻辑
+        // 在上下文刷新后执行自定义逻辑
         afterRefresh(context, applicationArguments);
-        // 记录应用启动的时间点
+        // 标记应用程序启动完成
         startup.started();
-        // 如果配置了记录启动信息，则记录应用启动的相关信息
+        // 如果启用了启动信息日志记录，则记录启动信息
         if (this.logStartupInfo) {
             new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), startup);
         }
-        // 通知监听器应用已经启动，并传递启动监视对象
+        // 通知所有监听器应用程序已经启动
         listeners.started(context, startup.timeTakenToStarted());
-        // 执行应用程序的 `runners`，如 `CommandLineRunner` 和 `ApplicationRunner`
+        // 调用所有的 CommandLineRunner 和 ApplicationRunner 接口实现
         callRunners(context, applicationArguments);
-    }
-    catch (Throwable ex) {
-        // 捕获启动过程中的任何异常
-        // 如果异常是放弃运行的异常类型，直接抛出
+    } catch (Throwable ex) {
+        // 如果异常是因为放弃运行，则直接抛出
         if (ex instanceof AbandonedRunException) {
             throw ex;
         }
-        // 处理运行失败，包括释放资源和记录错误信息
+        // 处理运行时的异常，并通知监听器
         handleRunFailure(context, ex, listeners);
-        // 抛出一个状态非法异常，包装原始异常
+        // 抛出新的 IllegalStateException 异常
         throw new IllegalStateException(ex);
     }
-    
+
     try {
-        // 如果上下文已经处于运行状态，通知监听器应用准备就绪
+        // 如果上下文已经在运行，则通知所有监听器应用程序已准备好
         if (context.isRunning()) {
             listeners.ready(context, startup.ready());
         }
-    }
-    catch (Throwable ex) {
-        // 捕获通知监听器时的任何异常
-        // 如果异常是放弃运行的异常类型，直接抛出
+    } catch (Throwable ex) {
+        // 如果异常是因为放弃运行，则直接抛出
         if (ex instanceof AbandonedRunException) {
             throw ex;
         }
-        // 处理运行失败，包括释放资源和记录错误信息
+        // 处理运行时的异常，并通知监听器（没有提供监听器）
         handleRunFailure(context, ex, null);
-        // 抛出一个状态非法异常，包装原始异常
+        // 抛出新的 IllegalStateException 异常
         throw new IllegalStateException(ex);
     }
-    
-    // ***** 返回应用上下文对象
+
+    // 返回应用上下文
     return context;
 }
 ```
