@@ -101,6 +101,8 @@ jmap [ option ] vmid
 jmap -dump:format=b,file=./heap.hprof 2840
 Dumping heap to /home/work/heap.hprof ...
 Heap dump file created
+
+jmap -dump:live,format=b,file=./heap.hprof 2526
 ```
 
 下面是 `jmap` 命令的选项表格，其中每个参数都对应了其说明。`jmap` 是 Java 内存映像工具，用于生成和分析 Java 应用程序的内存转储。

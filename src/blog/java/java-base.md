@@ -103,10 +103,11 @@ finalize
 ### String, StringBuffer, StringBuilder 的区别
 String 
 是不可变的，内部使用 char[] 存储，jdk9 后优化成了 byte[] 存储，这个数组使用了 private final 进行修饰，也没有提供内部方法可以对它进行修改。  
-例如语法糖的 a + b，其实就是创建了一个新的 StringBuilder 对象，拼接后生成了新的 String对象。
+例如语法糖的 a + b，其实就是创建了一个新的 StringBuilder 对象，拼接后生成了新的 String对象。  
+> 语法糖的 a + b，其实就是创建了一个新的 StringBuilder 对象，拼接后生成了新的 String对象, 所以 for 循环拼接请使用 StringBuilder，不要使用 + 。
 
 StringBuffer   
-是安全的，它和 StringBuilder 都集成自 AbstactStringBuilder，它是基于模版方法模式，只不过StringBuilder 的所有方法都使用 Synchronied 进行了装饰，所以它是线程安全的。  
+是安全的，它和 StringBuilder 都集成自 AbstactStringBuilder，它是基于模版方法模式，只不过 StringBuffer 的所有方法都使用 Synchronied 进行了装饰，所以它是线程安全的。  
 
 StringBuilder  
 和 StringBuffer 差不多，只不过方法没有加锁，如果是方法内String拼接，使用 StringBuilder 即可。
@@ -119,17 +120,60 @@ StringBuilder
 1，如果字符串常量池中保存了对应的字符串对象的引用，直接返回该引用。  
 2，如果字符串常量池中没有保存对应的字符串对象的引用，那就在字符串常量池中创建一个指向该字符串对象的引用并返回。   
 3，例如：  
-String s1 = "java", String s2 = new String("java"),   
-String s3 = s1.intern(), String s4 = s2.intern();   
-最终 s3， s4 得到的都是 s1 的对象引用。
+String s1 = "test"   
+String s2 = s1.intern()  
+String s3 = new String("test")   
+String s4 = s3.intern()     
+最终 s1 == s2, s3 != s4, s1 == s4,  s2 和 s4 得到的都是 s1 的对象引用， 只有 s2 是单独一个对象。  
 
 
 ### Java 异常类结构
-1, 所有异常的父接口 Throwable    
-2, 再下一层是 Exception 和 Error  
-2.1, Error 包含 OOM 虚拟机Error, 栈溢出Error 等  
-2.2, 异常包含受检异常 和 非受检异常。  
-2.2.1, 受检异常主要有IO异常等，非受检异常主要是非法参数，空指针等，非受检异常都是 RuntimeException 以及其子类。   
+所有异常的父接口 Throwable    
+
+    1.1 再下一层是 Exception 和 Error  
+        1.1.1 Error 包含 OOM 虚拟机Error, 栈溢出Error 等  
+
+    1.2 异常包含受检异常 和 非受检异常。  
+        1.2.1 受检异常主要有IO异常等，非受检异常主要是非法参数，空指针等。  
+        1.2.2 非受检异常都是 RuntimeException 以及其子类。   
+
+```text
+java.lang.Object
+   |
+   +-- java.lang.Throwable
+         |
+         +-- java.lang.Error
+         |     |
+         |     +-- AssertionError
+         |     +-- LinkageError
+         |     |     +-- NoClassDefFoundError
+         |     |     +-- UnsatisfiedLinkError
+         |     |     +-- ......
+         |     +-- VirtualMachineError
+         |           +-- OutOfMemoryError
+         |           +-- StackOverflowError
+         |           +-- ......
+         |
+         +-- java.lang.Exception
+               |
+               +-- java.lang.RuntimeException
+               |     |
+               |     +-- IllegalArgumentException
+               |     |     +-- NumberFormatException
+               |     +-- IllegalStateException
+               |     +-- IndexOutOfBoundsException
+               |     |     +-- ArrayIndexOutOfBoundsException
+               |     |     +-- StringIndexOutOfBoundsException
+               |     +-- NullPointerException
+               |     +-- UnsupportedOperationException
+               |     +-- ......
+               |
+               +-- java.io.IOException
+               +-- java.sql.SQLException
+               +-- java.net.MalformedURLException
+               +-- java.util.ConcurrentModificationException
+               +-- ......
+```
 
 ### 范型
 ```java
@@ -236,7 +280,8 @@ Springboot启动的时候会加载所有依赖包中的 spring.factories 文件�
 2，实现被代理对象接口，定义的方法  
 3，引入被代理对象  
 4，在代理对象的方法內，可以添加增强的逻辑，然后调用被代理对象的方法。  
-> 太多简单不再举例。
+> 太过简单不再举例。
+
 #### 动态代理
 1，JDK 动态代理
 被代理对象有接口，使用JDK Proxy
@@ -325,7 +370,7 @@ public class Demo {
 ```
 #### 对比
 1，JDK proxy 必须实现接口，CGLIB 不必，因为 CGLIB 是通过生成一个被代理类的子类来进行代理的，因此不能代理声明为 final 类型的类和方法。  
-2，JDK proxy 效率比较高
+2，JDK proxy 效率比较高。  
 3，动态代理在运行时，才生成代理类字节码，并加载到 JVM 中的。  
 
 
