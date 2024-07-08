@@ -1,10 +1,11 @@
 ---
-title: 最大公约数最小公倍数
+title: 数学算法
 category:
   - 算法
-order: 102
+order: 80
 tag:
   - 算法
+  - 数学
 ---
 
 ## 最大公约数&最小公倍数
@@ -29,7 +30,7 @@ public int gcd(int a, int b) {
 
 ```
 
-## 应用
+### 应用
 [lc 2748. 美丽下标对的数目](https://leetcode.cn/problems/number-of-beautiful-pairs/)
 
 ```text
@@ -44,7 +45,7 @@ public int gcd(int a, int b) {
 换而言之，如果 gcd(x, y) == 1 ，则认为 x 和 y 互质，
 其中 gcd(x, y) 是 x 和 y 的 最大公因数 。
 ```
-### 解法1
+#### 解法1
 ```java
 // 笨解法。
 class Solution {
@@ -78,7 +79,7 @@ class Solution {
 // 时间复杂度 log(n*logn)
 ```
 
-### 解法2
+#### 解法2
 ```java
 /**
  * 遍历一次数组
@@ -120,4 +121,40 @@ class Solution {
 }
 
 时间复杂度：O(n⋅(k+log⁡U))，其中 n 为 nums 的长度，k=10，U=max⁡(nums)。计算 GCD 的时间视作 O(1)。
+```
+
+## 求质数
+质数又称素数。一个大于1的自然数，除了1和它自身外，不能被其他自然数整除的数叫做质数；否则称为合数（规定1既不是质数也不是合数）。
+```java
+private boolean isPrime(int n){
+    for(int i = 2; i * i <= n; i++){
+        if(n % i == 0) return false;
+    }
+    return n >= 2;
+}
+```
+### 应用
+```text
+给你一个整数数组 nums。
+返回两个（不一定不同的）质数在 nums 中 下标 的 最大距离。
+```
+```java
+class Solution {
+    public int maximumPrimeDifference(int[] nums) {
+        int i = 0;
+        while(!isPrime(nums[i])) i++;
+
+        int j = nums.length - 1;
+        while(!isPrime(nums[j])) j--;
+
+        return j - i;
+    }
+
+    private boolean isPrime(int n){
+        for(int i = 2; i * i <= n; i++){
+            if(n % i == 0) return false;
+        }
+        return n >= 2;
+    }
+}
 ```
