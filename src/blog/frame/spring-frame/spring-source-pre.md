@@ -2,7 +2,7 @@
 title: Springboot流程梳理
 category:
   - 常用框架
-order: 30
+order: 2
 tag:
   - frame
   - Springboot

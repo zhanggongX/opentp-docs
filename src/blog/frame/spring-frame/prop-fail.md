@@ -2,7 +2,7 @@
 title: 自定义 Springboot-starter 属性加载失败
 category:
   - 常用框架
-order: 21
+order: 20
 tag:
   - frame
   - Springboot

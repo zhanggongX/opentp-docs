@@ -2,7 +2,7 @@
 title: Springboot启动流程
 category:
   - 常用框架
-order: 31
+order: 3
 tag:
   - frame
   - Springboot

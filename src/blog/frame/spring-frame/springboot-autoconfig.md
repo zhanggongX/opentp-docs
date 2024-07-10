@@ -2,7 +2,7 @@
 title: Springboot自动配置过程
 category:
   - 常用框架
-order: 20
+order: 6
 tag:
   - frame
   - Springboot

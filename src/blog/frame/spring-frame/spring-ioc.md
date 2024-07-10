@@ -2,7 +2,7 @@
 title: IOC初始化和Bean
 category:
   - 常用框架
-order: 32
+order: 4
 tag:
   - frame
   - Springboot
