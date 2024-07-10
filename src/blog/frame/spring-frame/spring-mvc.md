@@ -236,3 +236,12 @@ protected void render(ModelAndView mv, HttpServletRequest request, HttpServletRe
 7. 解析视图(使用 response 对象响应数据)
 8. 渲染视图
 9. 执行拦截器的 afterCompletion
+
+#### 大致流程如下：  
+SpringMVC 所有的请求都需要经过 DispatcherServlet 前端控制器，该类中提供了一个 doDispatch 方法，有关请求处理和结果响应的所有流程都在该方法中完成。
+1. 首先，借助于 HandlerMapping 处理器映射器得到处理器执行链，里面封装了 HandlerMethod 代表目标 Controller 的方法，同时还通过一个集合记录了要执行的拦截器。
+2. 接下来，会根据 HandlerMethod 获取对应的 HandlerAdapter 处理器适配器，里面封装了参数解析器以及结果处理器。
+3. 执行拦截器的 preHandle 方法
+4. 接下来，通过 HandlerAdapter 处理器适配器执行目标 Controller 的方法，在这个过程中会通过参数解析器和结果处理器分别解析浏览器提交的数据以及处理 Controller 方法返回的结果
+5. 执行拦截器的 postHandle 方法
+6. 最后处理响应，在这个过程中如果有异常抛出，会执行异常的逻辑，这里还会执行全局异常处理器的逻辑，并通过视图解析器 ViewResolver 解析视图，再渲染视图，最后再执行拦截器的 afterCompletion。
