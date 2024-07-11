@@ -83,8 +83,8 @@ int binarySearch_left(int[] nums, int target) {
     // 判断一下 nums[left] 是不是 target
     return nums[l] == target ? left : -1;
 }
-
 ```
+> 如果查找左边界，而 target 不存在，这里 l 是大于 target 的最小索引。
 
 ### 场景三：查找右边界
 ```java
@@ -113,8 +113,8 @@ int binarySearch_right(int[] nums, int target) {
     // 查到的结果不等于，说明数组里没有，返回-1；
     return nums[l - 1] == target ? (l - 1) : -1;
 }
-
 ```
+> 如果 target 不存在，搜索右侧边界的二分搜索返回的索引是小于 target 的最大索引。
 
 
 ### 总结
