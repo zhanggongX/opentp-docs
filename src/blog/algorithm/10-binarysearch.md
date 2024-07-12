@@ -74,14 +74,25 @@ int binarySearch_left(int[] nums, int target) {
             r = mid - 1;
         }
     }
+    
+    // l = 0, r = nums.length - 1，的情况下，
+    // 退出 while 的条件是 l = r + 1;
+    // 如果存在 target，此时 l 就是 target 的最左侧坐标，即左边界。
+    // 如果不存在 target，此时 l 就是大于 target 的最小坐标。
 
-    // 判断 target 是否存在于 nums 中
-    // 如果越界，target 肯定不存在，返回 -1
-    if (l < 0 || l >= nums.length) {
-        return -1;
-    }
-    // 判断一下 nums[left] 是不是 target
-    return nums[l] == target ? left : -1;
+    // 因为 l = r + 1，所以存在 l = nums.length 的情况。
+    // 在这种情况，有两种返回结果。
+    if(l == nums.length) return -1;
+    if(l == nums.length) return nums.length - 1;
+
+    // l != nums.length 的情况，根据题目返回不同的结果。
+    return nums[l] == target ? l : -1;
+    
+    // 如果要返回 >= target 的最小坐标，
+    // 如果 nums[l] == target，此时返回的是 target 的最小坐标。
+    // 如果 nums[l] != target，这里 l 是 大于 target 的最小值。
+    // 所以，逻辑统一，返回 l 即可。
+    return l;
 }
 ```
 > 如果查找左边界，而 target 不存在，这里 l 是大于 target 的最小索引。
@@ -104,18 +115,178 @@ int binarySearch_right(int[] nums, int target) {
             l = mid + 1;
         }
     }
-    // 最终右边界是 l-1;
+    
+    // l = 0, r = nums.length - 1，的情况下，
+    // 退出 while 的条件是 l = r + 1，即 r = l - 1;
+    // 如果存在 target，此时 r 就是 target 的最右侧坐标，即右边界。
+    // 如果不存在 target，此时 r 就是小于 target 的最大坐标。
 
-    // 不在范围内，返回-1
-    if (l - 1 < 0 || l - 1 >= nums.length) {
-        return -1;
-    }
-    // 查到的结果不等于，说明数组里没有，返回-1；
-    return nums[l - 1] == target ? (l - 1) : -1;
+    // 因为 r = l - 1，所以存在 l = -1 的情况。
+    // 在这种情况，有两种返回结果。
+    if(r < 0) return -1;
+    if(r < 0) return 0;
+
+    // r >= 0 的情况，根据题目返回不同的结果。
+    return nums[r] == target ? r : -1;
+    
+    // 如果要返回 <= target 的最大坐标，
+    // 如果 nums[r] == target，此时返回的是 target 的最大坐标。
+    // 如果 nums[r] != target，这里 r 是 小于 target 的最大坐标。
+    // 所以，逻辑统一，返回 r 即可。
+    return r;
 }
 ```
 > 如果 target 不存在，搜索右侧边界的二分搜索返回的索引是小于 target 的最大索引。
 
+### 示例
+#### [34.在排序数组中查找元素的第一个和最后一个位置](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/description/)
+```text
+给你一个按照非递减顺序排列的整数数组 nums，和一个目标值 target。
+请你找出给定目标值在数组中的开始位置和结束位置。
+
+如果数组中不存在目标值 target，返回 [-1, -1]。
+你必须设计并实现时间复杂度为 O(log n) 的算法解决此问题。
+```
+本题就是典型的查询 target 左右边界，且 target 不存在，就返回 -1 的情况，所以比较简单。
+```java
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int[] res = new int[2];
+
+        res[0] = searchL(nums, target);
+        if(res[0] == -1){
+            res[1] = -1;
+        }else{
+            res[1] = searchR(nums, target);
+        }
+    
+        return res; 
+    }
+
+    private int searchL(int[] nums, int target){
+        int l = 0, r = nums.length-1;
+        while(l <= r){
+            int mid = (l + r) / 2;
+
+            if(nums[mid] > target){
+                r =  mid - 1;
+            }else if(nums[mid] < target){
+                l = mid + 1;
+            }else{
+                r = mid - 1;
+            }
+        }
+
+        if(l >= nums.length){
+            return -1;
+        }
+
+        if(nums[l] != target) return -1;
+
+        return l;
+    }
+
+    private int searchR(int[] nums, int target){
+        int l = 0, r = nums.length-1;
+        while(l <= r){
+            int mid = (l + r) / 2;
+
+            if(nums[mid] > target){
+                r =  mid - 1;
+            }else if(nums[mid] < target){
+                l = mid + 1;
+            }else{
+                l = mid + 1;
+            }
+        }
+
+        if(r < 0){
+            return -1;
+        }
+
+        if(nums[r] != target) return -1;
+        
+        return r;
+    }
+}
+```
+
+#### [2563. 统计公平数对的数目](https://leetcode.cn/problems/count-the-number-of-fair-pairs/description/)
+```text
+给你一个下标从 0 开始、长度为 n 的整数数组 nums ，和两个整数 lower 和 upper ，
+返回 公平数对的数目 。
+
+如果 (i, j) 数对满足以下情况，则认为它是一个 公平数对 ：
+0 <= i < j < n，且
+lower <= nums[i] + nums[j] <= upper
+```
+本题就是典型的查询 target 左右边界，且 target 不存在，不能返回 -1 的情况。
+
+```java
+class Solution {
+    public long countFairPairs(int[] nums, int lower, int upper) {
+        // 本题的条件中 0 <= i < j < n， 仅仅限定了 i != j。
+        Arrays.sort(nums);
+        
+        long res = 0;
+        for (int i = 0; i < nums.length; i++) {
+            // 查找到 j > i 
+            // 且 j ~ nums.length-1 索引的 nums 中 min ~ max 中间的数字，就是，公平数对数。
+            int min = lower - nums[i];
+            int max = upper - nums[i];
+            // j 开始值 = i + 1
+
+            // 查找 i+1 ~ nums.length-1，中 min 元素的左边界。
+            int l = searchL(nums, i + 1, min);
+            // searchL 返回的是 l, 退出条件是 l = r + 1，存在 l >= nums.length 的情况，这种情况符合条件的数为 0。
+            if (l >= nums.length) continue;
+
+            int r = searchR(nums, i + 1, max);
+            // searchR 返回的是 r，同样，退出条件是 l = r + 1，即 r = l - 1，所以存在 r < 0 的情况，这种符合条件的同样是 0。
+            if (l < 0) continue;
+
+            // 其实上边的 if (l >= nums.length) continue; 
+            // 和 if (l < 0) continue; 不写也行。
+            // 因为如果 l = nums.length，r 必定 = nums.length-1
+            // 如果 r = -1, 则 l 必定 = 0；
+            // 这两种情况下 r - l + 1 都等于 0。
+            // 但是为了更好的理解二分的不存在 target 不返回 -1 的情况，所以这里加了两个判断。
+            res += (r - l + 1);
+        }
+        return res;
+    }
+
+    private static int searchR(int[] nums, int start, int target) {
+        int l = start, r = nums.length - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (nums[mid] < target) {
+                l = mid + 1;
+            } else if (nums[mid] > target) {
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return r;
+    }
+
+    private static int searchL(int[] nums, int start, int target) {
+        int l = start, r = nums.length - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (nums[mid] < target) {
+                l = mid + 1;
+            } else if (nums[mid] > target) {
+                r = mid - 1;
+            } else {
+                r = mid - 1;
+            }
+        }
+        return l;
+    }
+}
+```
 
 ### 总结
 确定 while 里使用 < 还是使用 <= 是根据区间来决定的，如果两端都是闭区间 [0, len-1]，则使用 <=, 如果左闭右开 [0, len) 则使用 < 。  
@@ -129,6 +300,7 @@ int binarySearch_right(int[] nums, int target) {
 5. 在 1 的前提下，寻找左边界，不相等使用第3条逻辑，相等 r = mid - 1; （收缩右侧边界)
 6. 在 1 的前提下，寻找右边界，不相等使用第3条逻辑，相等 l = mid + 1; （收缩左侧边界）  
 至此就解决了所有的二分查找问题。
+
 
 ### 参考：
 [labualdong算法笔记](https://labuladong.online/algo/essential-technique/binary-search-framework/#%E4%B8%89%E3%80%81%E5%AF%BB%E6%89%BE%E5%8F%B3%E4%BE%A7%E8%BE%B9%E7%95%8C%E7%9A%84%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE)  
