@@ -148,3 +148,6 @@ jhat \opt\heap.hprof 分析快照
 3. 把 2 中获取的线程 ID 转成 16 进制 0xPID。   
 4. jstack -l VMID | grep -50 0xPID。查看线程信息。       
 
+### 手动强制GC
+jcmd <pid> GC.run
+jmap -dump:live,format=b,file=./heap.hprof pid
