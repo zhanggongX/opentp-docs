@@ -9,10 +9,47 @@ tag:
 ---
 
 ## InnoDB 存储引擎
-mysql 数据库有很多种数据引擎，例如 MyISAM 和 InnoDB ，为了支持事务，目前最常用的是 InnoDB 存储引擎。
+mysql 数据库有很多种数据引擎，例如 MyISAM 和 InnoDB，为了支持事务，目前最常用的是 InnoDB 存储引擎。
 
 ### InnoDB 的数据存储
 InnoDB 是以页的形式存储数据的，InnoDB 将数据划分为若干个页，以页作为磁盘和内存之间交互的基本单位，InnoDB中页的大小一般为 16 KB。也就是在一般情况下，一次最少从磁盘中读取 16KB 的内容到内存中，一次最少把内存中的 16KB 内容刷新到磁盘中。
+
+### InnoDB 的行格式
+InnoDB 支持四种行格式分别是 Compact、Redundant、Dynamic 和 Compressed。
+所谓的行格式，就是在 InnoDB 中存储一条数据的具体格式，也称为纪录格式。
+```sql
+-- 设置行格式
+CREATE TABLE 表名 (列的信息) ROW_FORMAT=行格式名称
+ALTER TABLE 表名 ROW_FORMAT=行格式名称
+```
+#### Compact 行格式
+![行格式-图源：MySQL是怎样运行的](images/compact.png)
+compact 行格式分为纪录的额外信息和纪录的真实数据。
+
+##### 纪录的额外信息
+1. 变长字段的`长度`列表：  
+纪录数据行中所有变长字段(varchar, text, blob等)的长度，按照字段的顺序的逆序存储。例如 col1 = varchar(10)，实际长度 3，col2 = varchar(20)，实际长度 4，那么此处存放的是 4，3 的二进制编码。  
+```text
+至于此处存放长度 `4`，`3` 的具体字段长度则使用以下规则计算：  
+W = 字符的最大长度，utf8 = 3, utf8mb4 = 4。
+M = 变成字段的最大长度，varchar(10), M = 10。
+L = 实际存储的字段长度，例如 varchar(10)，实际长度 3，那么 L = 3。
+
+那么每个长度使用的字节长度 len 计算公式如下：
+if(M * W <= 255){
+    len = 1;
+}else if(M * W > 255){
+    if(L <= 127) {
+        len = 1;
+    }else{
+        l == 2;
+    }
+}
+```
+> ps1: 变长字段存储的值`不为 null`，才会在变长字段长度列表有值。  
+> ps2: 并不是所有记录都有 `变长字段长度列表` 部分，如果表中所有的列都不是变长的数据类型，这一部分就不需要有。
+##### 纪录的真实数据
+
 
 ## Explain
 
