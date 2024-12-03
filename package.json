@@ -11,9 +11,10 @@
     "docs:update-package": "npx vp-update"
   },
   "devDependencies": {
-    "@vuepress/bundler-vite": "2.0.0-rc.8",
-    "vue": "^3.4.16",
-    "vuepress": "2.0.0-rc.8",
-    "vuepress-theme-hope": "2.0.0-rc.31"
+    "@vuepress/bundler-vite": "2.0.0-rc.18",
+    "sass-embedded": "^1.81.1",
+    "vue": "^3.5.13",
+    "vuepress": "2.0.0-rc.18",
+    "vuepress-theme-hope": "2.0.0-rc.59"
   }
 }
