@@ -124,7 +124,7 @@ String s1 = "test"
 String s2 = s1.intern()  
 String s3 = new String("test")   
 String s4 = s3.intern()     
-最终 s1 == s2, s3 != s4, s1 == s4,  s2 和 s4 得到的都是 s1 的对象引用， 只有 s2 是单独一个对象。  
+最终 s1 == s2, s3 != s4, s1 == s4,  s2 和 s4 得到的都是 s1 的对象引用， 只有 s3 是单独一个对象。  
 
 
 ### Java 异常类结构
