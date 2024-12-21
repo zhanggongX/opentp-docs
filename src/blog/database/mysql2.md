@@ -134,6 +134,7 @@ SELECT key_part1, key_part2, key_part3 FROM table_name WHERE key_part2 = 'x';
 
 
 ## 索引合并
+所谓的索引合并，就是使用多个索引进行查询的时候，先把索引层面查到的数据进行合并，再用合并后的数据进行回表查询。
 ### 交集合并
 使用不同索引的搜索条件之间使用`AND`连接起来的情况；
 
